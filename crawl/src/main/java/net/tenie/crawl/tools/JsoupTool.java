@@ -3,6 +3,7 @@ package net.tenie.crawl.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,12 +25,12 @@ public class JsoupTool {
 //		System.out.println(i.attr("src"));
 //		}
 		
-		String[] rs =JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
-		System.out.println(Arrays.toString(rs));
+		List rs=JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
+		System.out.println(rs);
 		}
 	
 	
-	public static String[] getUrls(String path,String select) throws Exception{
+	public static List getUrls(String path,String select) throws Exception{
 		Document doc ;
 		if("http".equals(path.substring(0, 3))){
 			doc = Jsoup.connect(path).get();
@@ -38,9 +39,13 @@ public class JsoupTool {
 		}
 		String title = doc.title();
 		Elements e =doc.select(select);
-		String[] rs = new String[e.size()];
-		e.toArray(rs); 
-		
+		List<String> rs = new ArrayList<>();
+		 
+		for(Element i :e ){ 
+			rs.add(e.attr("src"));
+//			System.out.println(e.attr("src"));
+		} 
+	
 		return rs; 
 	}
 }
