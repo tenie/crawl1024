@@ -15,6 +15,17 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+/**
+ * HTTP协议是基于TCP协议的,TCP协议在Java中的体现就是套接字.在了解HTTP协议的基础上,完全可以通过TCP来实现一套HTTP库,
+ * 这个库可以发起网络请求和接受网络请求.只要能用URLConnection能实现的事情,用Socket同样能够实现.
+
+代理是"代理服务器",我不直接向百度发起请求,而是向代理服务器发起请求,然后代理服务器代替我向百度发起请求.这样一来,我的IP地址就不会暴露.在编写爬虫时,
+同一个IP爬多了就会被要求输入验证码,这时就可以通过代理来不停地换IP从而规避验证码.
+
+本文提供四种方法,第一种方法通过设置环境变量,第二种方法通过URLConnection,第三种方法通过nio中的SocketChannel,第四种方法通过Socket.
+ * @author ten
+ *
+ */
 
 public class TestProxy {
     static String host = "127.0.0.1";
