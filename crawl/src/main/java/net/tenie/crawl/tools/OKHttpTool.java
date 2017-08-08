@@ -15,7 +15,7 @@ import okhttp3.Response;
 public class OKHttpTool {
 	   
 	    static String host = "127.0.0.1";
-	    static int port = 1080;
+	    static int port = 16823;
 	 //   static String url = "http://1212.ip138.com/ic.asp";
 	    static String url = "http://t66y.com";
 	OkHttpClient client = new OkHttpClient();
@@ -51,13 +51,13 @@ public class OKHttpTool {
 	      System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
 	    }
 	 
-	    //System.out.println(response.body().string());
+	    System.out.println(response.body().string());
 	}
 	//3
 	/**
 	     * 异步get,直接调用
 	     */
-	    private void asyncGet(String IMAGE_URL) {
+	    public void asyncGet(String IMAGE_URL) {
 	    	
 	    	
 	       // client = new OkHttpClient();
@@ -74,25 +74,26 @@ public class OKHttpTool {
 
 	            @Override
 	            public void onResponse(Call call, Response response) throws IOException {
-
-	            byte[] b = response.body().bytes();
-	            System.out.println(b.length);
-	            byte2image(b, IMAGE_URL);
+	            	System.out.println(response.body().toString());
+//
+//	            byte[] b = response.body().bytes();
+//	            System.out.println(b.length);
+//	            byte2image(b, "/Users/tenie/Desktop/foo15.html");
 	           // throw new IOException();
 	            }
 	        });
 	    }
 	public static void main(String[] args) throws Exception {
 		OKHttpTool ok=new OKHttpTool();
-	// System.out.println(ok.run("http://tenie.net"));
-	//ok.run();
-	ok.asyncGet("http://cdn1.metarthunter.com/content/140303/zlatka-a-bunnu-15.jpg");
+	 System.out.println(ok.run("http://tenie.net"));
+	 ok.run();
+	//ok.asyncGet("http://google.com");
 	}
 	//byte数组到图片
 	  public static void byte2image(byte[] data,String path){
-	  //  if(data.length<3||path.equals("")) return;
+	    if(data.length<3||path.equals("")) return;
 	    try{
-	    FileImageOutputStream imageOutput = new FileImageOutputStream(new File("d:/1027.jpg"));
+	    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));
 	    imageOutput.write(data, 0, data.length);
 	    imageOutput.close();
 	    System.out.println("Make Picture success,Please find image in " + path);
