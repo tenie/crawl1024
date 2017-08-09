@@ -31,7 +31,8 @@ public class TestProxy {
     static String host = "127.0.0.1";
     static int port = 1080;
  //   static String url = "http://1212.ip138.com/ic.asp";
-    static String url = "http://t66y.com";
+   // static String url = "http://t66y.com";
+    static String url = "http://www.baidu.com";
     public static void main(String[] args) throws Exception {
         four();
     }

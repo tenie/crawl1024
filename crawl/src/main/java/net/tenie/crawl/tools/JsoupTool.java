@@ -25,7 +25,7 @@ public class JsoupTool {
 //		System.out.println(i.attr("src"));
 //		}
 		
-		List rs=JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
+		List rs=JsoupTool.getUrls("/Users/tenie/Desktop/1024.html", "input[type='image']");
 		System.out.println(rs);
 		}
 	
