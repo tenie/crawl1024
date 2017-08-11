@@ -29,8 +29,14 @@ public class JsoupTool {
 		System.out.println(rs);
 		}
 	
-	
-	public static List getUrls(String path,String select) throws Exception{
+	/**
+	 * 提供url或文件路径, 和要获取最终url的选择器表达式(和jquery语法类似)  获取最终的url字符串列表, 
+	 * @param path
+	 * @param select
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getUrls(String path,String select) throws Exception{
 		Document doc ;
 		if("http".equals(path.substring(0, 3))){
 			doc = Jsoup.connect(path).get();
