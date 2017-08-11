@@ -1,5 +1,6 @@
 package net.tenie.crawl.controller;
  
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.tenie.crawl.tools.JsoupTool;
 import net.tenie.crawl.tools.OKHttpTool;
  
 
@@ -56,16 +58,22 @@ public class MainController {
 	        return "ok";
 		}
 		
+		/**
+		 * 获取单个页面中的src的字符串, 
+		 * @param queryParam
+		 * @return
+		 * @throws Exception 
+		 */
 		@RequestMapping(value="/url",method=RequestMethod.POST)
 		@ResponseBody
-		public String geturl(@RequestParam Map<String, String> queryParam){
+		public List geturl(@RequestParam Map<String, String> queryParam) throws Exception{
 			String url1 = queryParam.get("url1");
-	        logger.info(url1);
-	    	OKHttpTool ok=new OKHttpTool();
-	    	// System.out.println(ok.run("http://tenie.net"));
-	    	//ok.run();  //  http://cdn1.metarthunter.com/content/140303/zlatka-a-bunnu-15.jpg
-	    	ok.asyncGet(url1);
-	        return "ok";
+			String select = queryParam.get("select");
+			
+	        logger.info(url1 + " ; " + select);
+	    	JsoupTool jt = new JsoupTool(); 
+	    	 
+	        return jt.getUrls(url1, select);
 		}
 		
 		

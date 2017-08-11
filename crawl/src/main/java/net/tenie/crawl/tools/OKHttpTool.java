@@ -29,12 +29,12 @@ public class OKHttpTool {
 //         System.setProperty("http.proxyPort", port + "");
 //    }
 	//1
-	OKHttpTool(String host,String port){
+	public OKHttpTool(String host,String port){
 	   System.setProperty("http.proxySet", "true");
        System.setProperty("http.proxyHost", host);
        System.setProperty("http.proxyPort", port );
 	}
-	OKHttpTool(){}
+	public OKHttpTool(){}
 	
 	/**
 	 * 获取body中的字符串

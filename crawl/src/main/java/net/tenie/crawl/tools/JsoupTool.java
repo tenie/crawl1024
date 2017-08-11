@@ -25,7 +25,9 @@ public class JsoupTool {
 //		System.out.println(i.attr("src"));
 //		}
 		
-		List rs=JsoupTool.getUrls("/Users/tenie/Desktop/1024.html", "input[type='image']");
+		List rs=JsoupTool.getUrls("https://www.tenie.net/article/18", "img");
+//		List rs=JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
+		//List rs=JsoupTool.getUrls("/Users/tenie/Desktop/1024.html", "input[type='image']");
 		System.out.println(rs);
 		}
 	
@@ -38,7 +40,8 @@ public class JsoupTool {
 	 */
 	public static List<String> getUrls(String path,String select) throws Exception{
 		Document doc ;
-		if("http".equals(path.substring(0, 3))){
+		 
+		if("http".equals(path.substring(0, 4))){
 			doc = Jsoup.connect(path).get();
 		}else{
 			doc =Jsoup.parse(new File(path), "utf-8");
@@ -49,7 +52,7 @@ public class JsoupTool {
 		 
 		for(Element i :e ){ 
 			rs.add(e.attr("src"));
-//			System.out.println(e.attr("src"));
+		System.out.println(e.attr("src"));
 		} 
 	
 		return rs; 
