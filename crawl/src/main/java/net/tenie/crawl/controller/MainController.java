@@ -1,5 +1,6 @@
 package net.tenie.crawl.controller;
  
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +72,34 @@ public class MainController {
 			String select = queryParam.get("select");
 			
 	        logger.info(url1 + " ; " + select);
-	    	JsoupTool jt = new JsoupTool(); 
+	    	//JsoupTool jt = new JsoupTool(); 
 	    	 
-	        return jt.getUrls(url1, select);
+	        return JsoupTool.getUrls(url1, select);
 		}
 		
-		
+		/**
+		 * 获取多个页面中的src的字符串, 
+		 * @param queryParam
+		 * @return
+		 * @throws Exception 
+		 */
+		@RequestMapping(value="/urls",method=RequestMethod.POST)
+		@ResponseBody
+		public List<String> geturls(@RequestParam Map<String, String> queryParam) throws Exception{
+			String url1 = queryParam.get("url1");
+			String select = queryParam.get("select");
+			List<String> rs = new ArrayList<String>();
+	        logger.info(url1 + " ; " + select);
+	        
+	    	//JsoupTool jt = new JsoupTool(); 
+	    	String[] strArr = url1.split("\n");
+	    	for(String str : strArr){
+	    		rs.addAll(JsoupTool.getUrls(str, select));
+	    	}
+	    	
+	    	
+	        return rs;
+		}
 		
 }
 
