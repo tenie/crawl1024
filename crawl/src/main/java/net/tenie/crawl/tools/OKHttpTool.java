@@ -1,13 +1,11 @@
 package net.tenie.crawl.tools;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
+import java.io.IOException; 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.imageio.stream.FileImageOutputStream;
-
+import org.springframework.stereotype.Component;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -16,6 +14,7 @@ import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
 
+@Component
 public class OKHttpTool {
 	   
 	    static String host ;

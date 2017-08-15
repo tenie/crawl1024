@@ -121,7 +121,10 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="assets/js/jquery.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
-	<script>
+    
+    <script src="assets/js/vue.min.js"></script>
+<script>
+//@ sourceURL=jsname.js
 	$('#myTab a').click(function (e) {
 	  e.preventDefault()
 	  $(this).tab('show')
@@ -158,11 +161,29 @@
 		})
 		return false;
 	})
-	
+	//后台下载图片
 	$("#imgDownloadBtn").click(function(){ 
+		var btn =$(this)
+		btn.attr("disabled",true);
+		btn.text("爬取ing")
+		var index = 0;
 		$.post("/downloadImage",{imgUrls:$("#imgUrls").val()},function(data){
 			alert(data) 
 		})
+		var done = setInterval(function(){
+				$.get("/downloadFinish",function(rs){
+					//alert("done"+index++);
+					if(rs == "done"){
+						clearInterval(done);
+						//alert("完成")
+						btn.text("爬取");
+						btn.removeAttr("disabled");
+						
+					}else{
+						
+					}
+				})
+			},2000)
 		
 	})
 	</script>    

@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +29,12 @@ import net.tenie.crawl.tools.OKHttpTool;
 
 @Controller //@RestController 等价@Controller + @ResponseBody
 public class MainController {
-	private boolean isCrawling = false;
+	volatile private boolean isCrawling = false;
 
+	@Autowired
+	private OKHttpTool tool ; // = 	new OKHttpTool(); 
+	@Value("${image.save.path}")
+	private String fileSavePath;
 	Logger logger = LoggerFactory.getLogger(MainController.class); 
 		/**
 		 * 首页的配置
@@ -113,8 +121,9 @@ public class MainController {
 		 */
 		@RequestMapping(value="/downloadImage",method=RequestMethod.POST) 
 		@ResponseBody
-		public String downloadImage(@RequestParam Map<String, String> queryParam) throws Exception{
-			
+		public String downloadImage(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{
+//			 String fileName = request.getSession().getServletContext().getRealPath("/");
+			 String fileName=fileSavePath;
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try {
@@ -125,9 +134,8 @@ public class MainController {
 						Map<String, Object> rsMap; 
 							rsMap = tool.getBodyBytesAndType(url); 
 						byte[]	 imgB = (byte[]) rsMap.get("val");
-						String type = (String) rsMap.get("type");
-						System.out.println(type); 
-						tool.byte2image(imgB,"D:/foo/imge"+new Date().getTime()+"."+tool.typeChange(type)); 
+						String type = (String) rsMap.get("type"); 
+					    tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
 					} 
 				} catch (Exception e) { 
 					e.printStackTrace();	
@@ -143,10 +151,27 @@ public class MainController {
 				thread.start();
 				isCrawling=true;
 				return "开始爬取...";
-			}
-			 
+			} 
 	        
 	       
+		}
+		
+		/**
+		 * 查询下载图片是否完成 
+		 * @param queryParam
+		 * @return
+		 * @throws Exception 
+		 */
+		@RequestMapping(value="/downloadFinish",method=RequestMethod.GET) 
+		@ResponseBody
+		public String downloadFinish(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{
+			if(isCrawling){
+				return "doing";
+			}else{
+				return "done";
+			}
+			 
+		
 		}
 		 
 		
