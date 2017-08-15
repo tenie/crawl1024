@@ -133,7 +133,7 @@ public class OKHttpTool {
 	    }
 	
 	 //byte数组到图片
-	  private static void byte2image(byte[] data,String path){
+	  public static void byte2image(byte[] data,String path){
 	    if(data.length<3||path.equals("")) return;
 	    try{
 	    FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));
@@ -145,20 +145,37 @@ public class OKHttpTool {
 	      ex.printStackTrace();
 	    }
 	  }
+	 //image/gif
+	  public static String typeChange(String type) {
+		  String rs = "";
+		  switch (type) {
+		case "image/x-icon":
+			rs = "ico";
+			break;
+		case "image/jpeg":
+			rs = "jpg";
+			break;
+		case "image/png":
+			rs = "png";
+			break;
+		case "image/gif":
+			rs = "gif";
+			break;
+		default:
+			break;
+		}
+		  
+		  return rs;
+	  }
 
 	  public static void main(String[] args) throws Exception {
 	//		OKHttpTool ok=new OKHttpTool();
 		  //System.out.println(ok.run("http://tenie.net"));
 		// ok.run();
 		// ok.asyncGet("https://www.tenie.net/lib/img/JGT_meitu_3.jpg");
-		  Map<String,Object> m = new HashMap();
-		  String[] str = {"asd","dasd"};
-		  m.put("val1", str);
-		  m.put("val2", "hehe");
-		 // Object o = m.get("val1");
-		  String[] str2 =(String[]) m.get("val1");//new String[2];
-		  System.out.println(Arrays.toString(str2)+"!");
-		  
+//		
+		  Map<String, Object> rsMap =   new OKHttpTool().getBodyBytesAndType("https://www.tenie.net/lib/assets/img/codeMonkey.ico");
+		 System.out.println(rsMap.get("type")); 
 		} 
 
 }

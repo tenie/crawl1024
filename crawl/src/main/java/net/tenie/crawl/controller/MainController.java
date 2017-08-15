@@ -1,8 +1,12 @@
 package net.tenie.crawl.controller;
  
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import net.tenie.crawl.tools.JsoupTool;
 import net.tenie.crawl.tools.OKHttpTool;
  
+ 
 
 @Controller //@RestController 等价@Controller + @ResponseBody
 public class MainController {
+	private boolean isCrawling = false;
 
 	Logger logger = LoggerFactory.getLogger(MainController.class); 
 		/**
@@ -67,14 +73,14 @@ public class MainController {
 		 */
 		@RequestMapping(value="/url",method=RequestMethod.POST)
 		@ResponseBody
-		public List geturl(@RequestParam Map<String, String> queryParam) throws Exception{
+		public Set geturl(@RequestParam Map<String, String> queryParam) throws Exception{
 			String url1 = queryParam.get("url1");
 			String select = queryParam.get("select");
 			
 	        logger.info(url1 + " ; " + select);
 	    	//JsoupTool jt = new JsoupTool(); 
 	    	 
-	        return JsoupTool.getUrls(url1, select);
+	        return JsoupTool.getUrlsSet(url1, select);
 		}
 		
 		/**
@@ -85,22 +91,74 @@ public class MainController {
 		 */
 		@RequestMapping(value="/urls",method=RequestMethod.POST)
 		@ResponseBody
-		public List<String> geturls(@RequestParam Map<String, String> queryParam) throws Exception{
+		public Set<String> geturls(@RequestParam Map<String, String> queryParam) throws Exception{
 			String url1 = queryParam.get("url1");
 			String select = queryParam.get("select");
-			List<String> rs = new ArrayList<String>();
+			Set<String> rs = new HashSet<String>();
 	        logger.info(url1 + " ; " + select);
 	        
 	    	//JsoupTool jt = new JsoupTool(); 
 	    	String[] strArr = url1.split("\n");
 	    	for(String str : strArr){
-	    		rs.addAll(JsoupTool.getUrls(str, select));
-	    	}
-	    	
-	    	
+	    		rs.addAll(JsoupTool.getUrlsSet(str, select));
+	    	} 
 	        return rs;
 		}
 		
+		/**
+		 * 获取多个页面中的src的字符串, 
+		 * @param queryParam
+		 * @return
+		 * @throws Exception 
+		 */
+		@RequestMapping(value="/downloadImage",method=RequestMethod.POST) 
+		@ResponseBody
+		public String downloadImage(@RequestParam Map<String, String> queryParam) throws Exception{
+			
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+				try {
+					Thread.sleep(5000);
+					OKHttpTool tool = 	new OKHttpTool(); 
+					String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
+					for(String url :urlArry) {
+						Map<String, Object> rsMap; 
+							rsMap = tool.getBodyBytesAndType(url); 
+						byte[]	 imgB = (byte[]) rsMap.get("val");
+						String type = (String) rsMap.get("type");
+						System.out.println(type); 
+						tool.byte2image(imgB,"D:/foo/imge"+new Date().getTime()+"."+tool.typeChange(type)); 
+					} 
+				} catch (Exception e) { 
+					e.printStackTrace();	
+				}finally {
+					isCrawling=false;
+				}
+				
+			}
+			});
+			if(isCrawling) {
+				 return "有任务在爬取中...";
+			}else {
+				thread.start();
+				isCrawling=true;
+				return "开始爬取...";
+			}
+			 
+	        
+	       
+		}
+		 
+		
+		public static void main(String[] args) {
+			System.out.println("??????");
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					System.out.println("..");
+				}
+			});
+			thread.start();
+		}
 }
 
  
