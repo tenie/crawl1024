@@ -196,9 +196,11 @@
 	//根据textarea中的url, 点击按钮直接下载
 	$("#crawlbtn1").click(function(){
 		cacheImgDownload();
+		return false;
 	})
-	$("#crawlbtn1").click(function(){
+	$("#crawlbtn2").click(function(){
 		cacheImgDownload();
+		return false;
 	})
 	
 	function cacheImgDownload(){

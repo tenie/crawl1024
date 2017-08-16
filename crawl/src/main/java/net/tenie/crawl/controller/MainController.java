@@ -1,10 +1,8 @@
 package net.tenie.crawl.controller;
- 
-import java.util.ArrayList;
-import java.util.Arrays;
+  
+import java.util.Arrays; 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.HashSet; 
 import java.util.Map;
 import java.util.Set;
 
@@ -19,8 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody; 
 
 import net.tenie.crawl.tools.JsoupTool;
 import net.tenie.crawl.tools.OKHttpTool;
@@ -119,11 +116,12 @@ public class MainController {
 	    	} 
 	    	if(cache !=null)cache.clear();
 	        cache=rs;
+	        //rs.iterator()
 	        return rs;
 		}
 		
 		/**
-		 * 获取多个页面中的src的字符串, 
+		 * 图片下载, 
 		 * @param queryParam
 		 * @return
 		 * @throws Exception 
@@ -133,25 +131,17 @@ public class MainController {
 		public String downloadImage(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{
 //			 String fileName = request.getSession().getServletContext().getRealPath("/");
 			 String fileName=fileSavePath;
+			 String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try {
 					Thread.sleep(5000);
-					OKHttpTool tool = 	new OKHttpTool(); 
-					String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
-					for(String url :urlArry) {
-						Map<String, Object> rsMap; 
-							rsMap = tool.getBodyBytesAndType(url); 
-						byte[]	 imgB = (byte[]) rsMap.get("val");
-						String type = (String) rsMap.get("type"); 
-					    tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
-					} 
+					downloadAction(urlArry,fileName); 
 				} catch (Exception e) { 
 					e.printStackTrace();	
 				}finally {
 					isCrawling=false;
-				}
-				
+				} 
 			}
 			});
 			if(isCrawling) {
@@ -160,9 +150,43 @@ public class MainController {
 				thread.start();
 				isCrawling=true;
 				return "开始爬取...";
-			} 
-	        
-	       
+			}  	       
+		}
+		
+		
+		@RequestMapping(value="/cacheDownload",method=RequestMethod.GET) 
+		@ResponseBody
+		public String cacheDownload(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{
+//			 String fileName = request.getSession().getServletContext().getRealPath("/");
+			 String fileName=fileSavePath;
+			 String[] urlArry ;
+			 if(cache!=null && !cache.isEmpty()){
+				 urlArry = new String[cache.size()];
+				 cache.toArray(urlArry);
+				
+				  
+			 }else{
+				 return "没人东西可爬取";
+			 }  
+			 Thread thread = new Thread(new Runnable() {
+				public void run() {
+				try {
+					Thread.sleep(5000);
+					downloadAction(urlArry,fileName); 
+				} catch (Exception e) { 
+					e.printStackTrace();	
+				}finally {
+					isCrawling=false;
+				} 
+			}
+			});
+			if(isCrawling) {
+				 return "有任务在爬取中...";
+			}else {
+				thread.start();
+				isCrawling=true;
+				return "开始爬取...";
+			}  	       
 		}
 		
 		/**
@@ -181,8 +205,38 @@ public class MainController {
 			}  
 		}
 		 
+		/**
+		 * 开始下载保持到指定路径
+		 * @param urlArry
+		 * @param fileName
+		 * @throws Exception
+		 */
+		private void downloadAction(String[] urlArry ,String fileName) throws Exception{
+			System.out.println("begin.....");
+//			 OKHttpTool tool = 	new OKHttpTool(); 
+			//String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
+			for(String url : urlArry) {
+				System.out.println("carwling= "+url);
+				Map<String, Object> rsMap; 
+					rsMap = tool.getBodyBytesAndType(url); 
+				byte[]	 imgB = (byte[]) rsMap.get("val");
+				String type = (String) rsMap.get("type"); 
+			    tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
+		}
 		
-	 
+		}
+		
+		
+		
+		public static void main(String[] args) {
+			Set<String> set = new HashSet();
+			set.add("1");
+			set.add("2");
+			set.add("1");
+			String[] str = new String[set.size()];
+			 set.toArray(str);
+			 System.out.println(Arrays.toString(str));
+		}
 }
 
  
