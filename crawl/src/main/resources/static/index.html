@@ -58,7 +58,10 @@
 					  	<p>
 					  		单个页面url:<input name="url1"  >
 					  		元素选择器表达式:<input name="select"  >
+					  		<br>
+					  		元素属性:<input name="attr">
 					  		<button id="btn1">提交</button>
+					  		<button id="crawlbtn1">爬取</button>
 					    </p> 
 					  	<textarea id="viewURL" rows="12" cols="80" readonly > </textarea>
 			
@@ -86,8 +89,11 @@
 					  	<hr>
 					  	<p>
 					  		多页面url:<textarea name="url1"  rows="3" cols="80" ></textarea><br>
-					  		元素选择器:<br><input name="select"  >
+					  		元素选择器:<input name="select"  >
+					  		 
+					  		元素属性:<input name="attr">
 					  		<button id="btn2">提交</button>
+					  		<button id="crawlbtn2">爬取</button>
 					    </p> 
 					  	<textarea id="viewURL2" rows="7" cols="80" readonly > </textarea>
 					  <!-- 	<p class="pull-right red"><i class="icon-heart"></i></p> -->
@@ -186,6 +192,20 @@
 			},2000)
 		
 	})
+	
+	//根据textarea中的url, 点击按钮直接下载
+	$("#crawlbtn1").click(function(){
+		cacheImgDownload();
+	})
+	$("#crawlbtn1").click(function(){
+		cacheImgDownload();
+	})
+	
+	function cacheImgDownload(){
+		$.get("/cacheDownload",function(data){
+			alert(data)
+		})
+    }
 	</script>    
     
   </body>

@@ -27,7 +27,7 @@ public class JsoupTool {
 //		System.out.println(i.attr("src"));
 //		}
 		
-		Set rs= JsoupTool.getUrlsSet("https://www.tenie.net/article/18", "img");
+		Set rs= JsoupTool.getUrlsSet("https://www.tenie.net/article/18", "img","src");
 //		List rs=JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
 		//List rs=JsoupTool.getUrls("/Users/tenie/Desktop/1024.html", "input[type='image']");
 		System.out.println(rs);
@@ -72,7 +72,7 @@ public class JsoupTool {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Set<String> getUrlsSet(String path,String select) throws Exception{
+	public static Set<String> getUrlsSet(String path,String select,String attr) throws Exception{
 		Document doc ;
 		boolean ishttp = false; 
 		if("http".equals(path.substring(0, 4))){ 
@@ -86,7 +86,7 @@ public class JsoupTool {
 		Set<String> rs = new HashSet<>();
 		 
 		for(Element element :es ){ 
-			String rsStr = element.attr("src"); 
+			String rsStr = element.attr(attr); 
 			System.out.println("result==="+rsStr);
 			if(ishttp) {
 				rsStr=parseUrl(rsStr,path);

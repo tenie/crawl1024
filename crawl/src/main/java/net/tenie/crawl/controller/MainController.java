@@ -30,6 +30,8 @@ import net.tenie.crawl.tools.OKHttpTool;
 @Controller //@RestController 等价@Controller + @ResponseBody
 public class MainController {
 	volatile private boolean isCrawling = false;
+	
+	volatile private Set<String> cache;
 
 	@Autowired
 	private OKHttpTool tool ; // = 	new OKHttpTool(); 
@@ -81,14 +83,18 @@ public class MainController {
 		 */
 		@RequestMapping(value="/url",method=RequestMethod.POST)
 		@ResponseBody
-		public Set geturl(@RequestParam Map<String, String> queryParam) throws Exception{
+		public Set<String> geturl(@RequestParam Map<String, String> queryParam) throws Exception{
 			String url1 = queryParam.get("url1");
 			String select = queryParam.get("select");
+			String attr = queryParam.get("attr");
 			
 	        logger.info(url1 + " ; " + select);
 	    	//JsoupTool jt = new JsoupTool(); 
-	    	 
-	        return JsoupTool.getUrlsSet(url1, select);
+	    	
+	        Set<String> rs= JsoupTool.getUrlsSet(url1, select,attr);
+	        if(cache !=null)cache.clear();
+	        cache=rs;
+	        return rs;
 		}
 		
 		/**
@@ -102,14 +108,17 @@ public class MainController {
 		public Set<String> geturls(@RequestParam Map<String, String> queryParam) throws Exception{
 			String url1 = queryParam.get("url1");
 			String select = queryParam.get("select");
+			String attr = queryParam.get("attr");
 			Set<String> rs = new HashSet<String>();
 	        logger.info(url1 + " ; " + select);
 	        
 	    	//JsoupTool jt = new JsoupTool(); 
 	    	String[] strArr = url1.split("\n");
 	    	for(String str : strArr){
-	    		rs.addAll(JsoupTool.getUrlsSet(str, select));
+	    		rs.addAll(JsoupTool.getUrlsSet(str, select,attr));
 	    	} 
+	    	if(cache !=null)cache.clear();
+	        cache=rs;
 	        return rs;
 		}
 		
@@ -124,7 +133,7 @@ public class MainController {
 		public String downloadImage(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{
 //			 String fileName = request.getSession().getServletContext().getRealPath("/");
 			 String fileName=fileSavePath;
-			Thread thread = new Thread(new Runnable() {
+			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try {
 					Thread.sleep(5000);
