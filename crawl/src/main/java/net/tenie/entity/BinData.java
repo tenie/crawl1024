@@ -18,6 +18,39 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 public class BinData {
 	private static ArrayBlockingQueue queue;
-	private static int index;
+	private   static int index;
+	
+	public static int getIndex() {
+		return index;
+	}
+
+	public static void setIndex(int index) {
+		BinData.index = index;
+	}
+
+	public static void setQueue(int i){
+		queue=new ArrayBlockingQueue(i);
+		index = 0;
+	//	return queue;
+	}
+	
+	public static ArrayBlockingQueue getQueue(){
+		//queue=new ArrayBlockingQueue(i);
+	 	return queue;
+	}
+	
+	public static void main(String[] args) throws InterruptedException {
+		ArrayBlockingQueue q = new ArrayBlockingQueue(10);
+		q.add("1");
+		
+		for(int i =0 ; i<15 ; i++){
+			q.put("1"+i);
+			System.out.println(q.size());
+		}
+		
+		
+	}
+	
+	
 	
 }

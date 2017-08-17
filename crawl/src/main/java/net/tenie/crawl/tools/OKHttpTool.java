@@ -1,7 +1,8 @@
 package net.tenie.crawl.tools;
 
 import java.io.File;
-import java.io.IOException; 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.stream.FileImageOutputStream;
@@ -17,23 +18,27 @@ import okhttp3.Response;
 @Component
 public class OKHttpTool {
 	   
-	    static String host ;
-	    static String port ;
+	   private static String host ;
+	   private static String port ;
 //	    static String url = "http://1212.ip138.com/ic.asp";
 //	    static String url = "http://t66y.com";
-	OkHttpClient client = new OkHttpClient();
+	    private static OkHttpClient client = new OkHttpClient();
+	    
+	    public OKHttpTool(){
+	    	
+	    }
 //	 static{
 //    	 System.setProperty("http.proxySet", "true");
 //         System.setProperty("http.proxyHost", host);
 //         System.setProperty("http.proxyPort", port + "");
 //    }
 	//1
-	public OKHttpTool(String host,String port){
+	public static void setProxy(String host,String port){
 	   System.setProperty("http.proxySet", "true");
        System.setProperty("http.proxyHost", host);
        System.setProperty("http.proxyPort", port );
 	}
-	public OKHttpTool(){}
+	 
 	
 	/**
 	 * 获取body中的字符串
@@ -102,7 +107,7 @@ public class OKHttpTool {
 	  /**
 	     * 异步 获取body中的byte[] 
 	     */
-	    private void asyncGetBodyByte(String IMAGE_URL) {  
+	    public void asyncGetBodyByte(String IMAGE_URL,Collection<Map<String,Object>> collection) {  
 	       // client = new OkHttpClient();
 	        final Request request = new Request.Builder().get()
 	                .url(IMAGE_URL)
@@ -112,6 +117,10 @@ public class OKHttpTool {
 	            @Override
 	            public void onFailure(Call call, IOException e) {
 	                e.printStackTrace(); 
+	                Map<String,Object> rs = new HashMap<String,Object>();
+	           	    rs.put("val", new byte[0]);
+	           	    rs.put("type", ""); 
+	                collection.add(rs); 
 	            }
 
 	            @Override
@@ -120,10 +129,13 @@ public class OKHttpTool {
 //	           	    for (int i = 0; i < responseHeaders.size(); i++) {
 //	           	      System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
 //	           	    }
-	           	    String type = responseHeaders.get("Content-Type").split("/")[1];
+	           	    String type = responseHeaders.get("Content-Type");
 	           	    byte[] by =response.body().bytes();
-	           	    System.out.println(by.length);
-	           	    byte2image(by, "/Users/tenie/Desktop/foo."+type);
+	           	    Map<String,Object> rs = new HashMap<String,Object>();
+	           	    rs.put("val", by);
+	           	    rs.put("type", type); 
+	           	    collection.add(rs);
+	           	    // byte2image(by, "/Users/tenie/Desktop/foo."+type);
 	           	    response.close();
 	           	   
 	            }

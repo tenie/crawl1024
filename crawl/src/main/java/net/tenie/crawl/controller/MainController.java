@@ -2,9 +2,11 @@ package net.tenie.crawl.controller;
   
 import java.util.Arrays; 
 import java.util.Date;
-import java.util.HashSet; 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.tenie.crawl.tools.JsoupTool;
 import net.tenie.crawl.tools.OKHttpTool;
+import net.tenie.entity.BinData;
  
  
 
@@ -135,8 +138,9 @@ public class MainController {
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try {
-					Thread.sleep(5000);
-					downloadAction(urlArry,fileName); 
+					Thread.sleep(2000);
+					asyncDownloadAction(urlArry,fileName); 
+					//downloadAction(urlArry,fileName); 
 				} catch (Exception e) { 
 					e.printStackTrace();	
 				}finally {
@@ -171,8 +175,9 @@ public class MainController {
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try {
-					Thread.sleep(5000);
-					downloadAction(urlArry,fileName); 
+					Thread.sleep(2000);
+					asyncDownloadAction(urlArry,fileName); 
+					//downloadAction(urlArry,fileName); 
 				} catch (Exception e) { 
 					e.printStackTrace();	
 				}finally {
@@ -222,7 +227,49 @@ public class MainController {
 				byte[]	 imgB = (byte[]) rsMap.get("val");
 				String type = (String) rsMap.get("type"); 
 			    tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
+		   }
+		
 		}
+		/**
+		 * 异步下载
+		 * @param urlArry
+		 * @param fileName
+		 * @throws Exception
+		 */
+		private void asyncDownloadAction(String[] urlArry ,String fileName) throws Exception{
+			System.out.println("begin.....");
+//			 OKHttpTool tool = 	new OKHttpTool(); 
+			//String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
+			BinData.setQueue(urlArry.length);
+			ArrayBlockingQueue<Map<String,Object>>  queue = 	BinData.getQueue();
+			for(String url : urlArry) {
+				System.out.println("carwling= "+url);
+				Map<String, Object> rsMap; 
+			    tool.asyncGetBodyByte(url,queue); 
+			  //  BinData.setIndex(BinData.getIndex()+1);
+		   }
+		   
+		   boolean tf =true;
+		   while(tf){
+			   
+			   if(queue.size()==urlArry.length){
+				   Iterator<Map<String,Object>>   it = queue.iterator();
+				   while(it.hasNext()){
+					   System.out.println("download image...");
+					   Map<String, Object> rsMap =  it.next();
+					   byte[]	 imgB = (byte[]) rsMap.get("val");
+					   String type = (String) rsMap.get("type"); 
+					   Thread.sleep(100);
+					   tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
+				    }
+				   break;
+				  }else{
+					  System.out.println(queue.size());
+					  Thread.sleep(500);
+				  }
+				  
+		   }
+		   
 		
 		}
 		
