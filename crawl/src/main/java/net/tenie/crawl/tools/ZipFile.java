@@ -179,8 +179,15 @@ public class ZipFile {
 	        System.out.println("压缩完成");  
 	    }  
 	  private int k = 1; // 定义递归次数变量  
-	  private void zip(ZipOutputStream out, File f, String base,  
-	            BufferedOutputStream bo) throws Exception { // 方法重载  
+	  /**
+	   * 
+	   * @param out 
+	   * @param f
+	   * @param base
+	   * @param bo 这是一个ZipOutputStream 的装饰类
+	   * @throws Exception
+	   */
+	  private void zip(ZipOutputStream out, File f, String base,  BufferedOutputStream bo) throws Exception { // 方法重载  
 	        if (f.isDirectory()) {  
 	            File[] fl = f.listFiles();  
 	            if (fl.length == 0) {  

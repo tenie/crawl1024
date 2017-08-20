@@ -53,15 +53,18 @@
 					  <div class="tab-pane active" id="about">
 					  <form id="form1">
 					 
-					  	<h3>获取单个页面中的图片URL字符串</h3> 
+					  	<h3>获取单个页面中的图片</h3> 
 					  	<hr>
 					  	<p>
-					  		单个页面url:<input name="url1"  >
-					  		元素选择器表达式:<input name="select"  >
+					  		单个页面url:<input name="url1" style="width: 506px;" >
 					  		<br>
+					  		元素选择器表达式:<input name="select"  >
+					  		 
 					  		元素属性:<input name="attr">
 					  		<button id="btn1">提交</button>
-					  		<button id="crawlbtn1">爬取</button>
+					  	<!-- 	<button id="crawlbtn1">爬取</button> -->
+					  		<a  href="/downloadZip" class="hidden " id="downloadZIPbtn">下载</a>
+					  		<!-- <button id="btnTEST" onclick="alert(1)">TEST</button> -->
 					    </p> 
 					  	<textarea id="viewURL" rows="12" cols="80" readonly > </textarea>
 			
@@ -84,7 +87,7 @@
 					  <div class="tab-pane" id="portfolio">
 						   <form id="form2">
 					 
-					  	<h3>获取多个页面中的元素</h3>
+					  	<h3>获取多个页面中的图片,每个页面url用换行符分割</h3>
 					  	<!-- <h5>Web Designer</h5> -->
 					  	<hr>
 					  	<p>
@@ -93,7 +96,7 @@
 					  		 
 					  		元素属性:<input name="attr">
 					  		<button id="btn2">提交</button>
-					  		<button id="crawlbtn2">爬取</button>
+					  		<!-- <button id="crawlbtn2">爬取</button> -->
 					    </p> 
 					  	<textarea id="viewURL2" rows="7" cols="80" readonly > </textarea>
 					  <!-- 	<p class="pull-right red"><i class="icon-heart"></i></p> -->
@@ -144,6 +147,10 @@
 	})
 	
 	$("#btn1").click(function(){
+		var btn =$(this)
+		var btntext = btn.text();
+		btn.attr("disabled",true);
+		btn.text("下载中...")
 		
 		$.post("/url",$("#form1").serialize(),function(data){
 			var html ="";
@@ -151,12 +158,35 @@
 				 html+=val+"\n";
 			})
 			$("#viewURL").val(html);
+			
+			//轮询是否下载完成, 完成下载,获取zip包
+			var done = setInterval(function(){
+				$.get("/downloadFinish",function(rs){
+					//alert("done"+index++);
+					if(rs == "done"){
+						clearInterval(done); 
+					//	$("#downloadZIPbtn").click(); //jQuery居然不能触发a 的click事件,用下面的原生写法
+						document.getElementById("downloadZIPbtn").click();
+						
+						btn.removeAttr("disabled");
+						btn.text(btntext);
+						//alert("ok");
+					}else{
+						
+					}
+				})
+			},2000)
+			
+			
 		})
 		return false;
 	})
 	
 	$("#btn2").click(function(){
-		 
+		var btn =$(this)
+		var btntext = btn.text();
+		btn.attr("disabled",true);
+		btn.text("下载中...")
 		$.post("/urls",$("#form2").serialize(),function(data){
 			  
 			var html ="";
@@ -164,6 +194,22 @@
 				 html+=val+"\n";
 			})
 			$("#viewURL2").val(html);
+			//轮询是否下载完成, 完成下载,获取zip包
+			var done = setInterval(function(){
+				$.get("/downloadFinish",function(rs){
+					//alert("done"+index++);
+					if(rs == "done"){
+						clearInterval(done); 
+					//	$("#downloadZIPbtn").click(); //jQuery居然不能触发a 的click事件,用下面的原生写法
+						document.getElementById("downloadZIPbtn").click(); 
+						btn.removeAttr("disabled");
+						btn.text(btntext);
+						//alert("ok");
+					}else{
+						
+					}
+				})
+			},2000)
 		})
 		return false;
 	})
@@ -181,7 +227,7 @@
 					//alert("done"+index++);
 					if(rs == "done"){
 						clearInterval(done);
-						//alert("完成")
+						document.getElementById("downloadZIPbtn").click(); 
 						btn.text("爬取");
 						btn.removeAttr("disabled");
 						
@@ -193,7 +239,7 @@
 		
 	})
 	
-	//根据textarea中的url, 点击按钮直接下载
+	//根据textarea中的url, 点击按钮直接下载 
 	$("#crawlbtn1").click(function(){
 		cacheImgDownload();
 		return false;
@@ -208,6 +254,20 @@
 			alert(data)
 		})
     }
+    
+    
+    
+  /*   //zip
+    $("#downloadZIPbtn1").click(function(){
+    	finishZipDownload();
+		return false;
+	})
+
+	function finishZipDownload(){
+		$.get("/downloadZip",function(data){
+			alert(1)
+		})
+    } */
 	</script>    
     
   </body>
