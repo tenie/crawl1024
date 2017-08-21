@@ -1,13 +1,20 @@
 package net.tenie.crawl.controller;
   
+import static org.mockito.Matchers.anyString;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream; 
 import java.io.OutputStream;
-import java.net.URLEncoder; 
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -378,9 +385,15 @@ public class MainController {
 			System.out.println("begin.....");
 //			 OKHttpTool tool = 	new OKHttpTool(); 
 			//String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
-			BinData.setQueue(urlArry.length);
+			//去除数组中的空字符串
+			Set<String> s = new HashSet<>();
+			Collections.addAll(s, urlArry);
+			s.remove("");
+			String[]  arr2 = new String[s.size()];
+			s.toArray(arr2);
+			BinData.setQueue(arr2.length);
 			ArrayBlockingQueue<Map<String,Object>>  queue = 	BinData.getQueue();
-			for(String url : urlArry) {
+			for(String url : arr2) {
 				System.out.println("carwling= "+url);
 				Map<String, Object> rsMap; 
 			    tool.asyncGetBodyByte(url,queue); 
@@ -472,6 +485,17 @@ public class MainController {
 			zipOut.flush();
 		}
 		
+		public static void main(String[] args) { 
+			
+			Set<String> s = new HashSet<>();
+			String[]  arr = {"","aa","","bb"};
+			 
+			Collections.addAll(s, arr);
+			s.remove("");
+			String[]  arr2 = new String[s.size()];
+			s.toArray(arr2);
+			System.out.println(Arrays.toString(arr2));
+		}
 		
 		 
 }
