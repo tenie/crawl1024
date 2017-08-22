@@ -109,6 +109,13 @@ public class OKHttpTool {
 	     */
 	    public void asyncGetBodyByte(String IMAGE_URL,Collection<Map<String,Object>> collection) {  
 	       // client = new OkHttpClient();
+	    	if(IMAGE_URL == null ||  "".equals(IMAGE_URL)){
+	    		Map<String,Object> rs = new HashMap<String,Object>();
+	    		rs.put("val", new byte[0]);
+           	    rs.put("type", ""); 
+                collection.add(rs); 
+                return ;
+	    	}
 	        final Request request = new Request.Builder().get()
 	                .url(IMAGE_URL)
 	                .build();
