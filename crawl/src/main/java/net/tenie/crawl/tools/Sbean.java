@@ -1,14 +1,15 @@
-package net.tenie.entity;
+package net.tenie.crawl.tools;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component; 
+import org.springframework.stereotype.Component;
 
-@Component 
-public class SessionBean {
+@Component
+@Scope("session")
+public class Sbean {
 	volatile private boolean isCrawling = false; 
 	volatile private Set<String> cache;
 	volatile private String finishzipFile = ""; 
@@ -40,5 +41,4 @@ public class SessionBean {
 	}
 	 
 	 
-	
 }

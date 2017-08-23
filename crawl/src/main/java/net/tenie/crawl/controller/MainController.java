@@ -26,8 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,8 +50,9 @@ public class MainController {
 
 	@Autowired
 	private OKHttpTool tool ; // = 	new OKHttpTool(); 
-	@Value("${image.save.path}")
-	private String fileSavePath;
+//	@Value("${image.save.path}")
+//	private String fileSavePath;
+	private String fileSavePath = System.getProperty("user.home");
 	Logger logger = LoggerFactory.getLogger(MainController.class); 
 		/**
 		 * 首页的配置
@@ -327,7 +327,10 @@ public class MainController {
 		@RequestMapping(value="/downloadZip",method=RequestMethod.GET) 
 		public void downloadFinishZip(HttpServletRequest request, HttpServletResponse response) throws Exception{
 			 //finishzipFile
-			if(finishzipFile ==null && "".equals(finishzipFile))return;
+			if(finishzipFile == null || "".equals(finishzipFile)){
+				System.out.println("没有可下载的文件");
+				throw new RuntimeException("no file"); 
+			} 
 			File file = new File(finishzipFile);   
 	        //判断文件是否存在如果不存在就返回默认图标  
 	        if(file.exists() && file.isFile() && file.canRead()) { 
