@@ -6,6 +6,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import net.tenie.crawl.interceptor.MyInterceptorl;
  
 
 
@@ -33,14 +35,14 @@ public class MyWebConfigurer extends WebMvcConfigurerAdapter{
 	     		只要经过DispatcherServlet的请求才会走拦截器链, 我们自定义的Servlet请求是不会被拦截的,
 	     		WebMvcConfigurerAdapter并非只能注册拦截器, 还有其他WEB配置用途,根据方法名自行判断
 	 * @author tenie
-	
+	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new MyInterceptorl()).addPathPatterns("/**");
-		registry.addInterceptor(new MyInterceptorl2()).addPathPatterns("/**");
+		//registry.addInterceptor(new MyInterceptorl2()).addPathPatterns("/**");
 		super.addInterceptors(registry);
 	}
-	 */
+	
 	
 	/**
 	 * 静态资源(图片等) 自定义目录的配置
