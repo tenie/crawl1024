@@ -1,4 +1,4 @@
-package net.tenie.entity;
+package net.tenie.crawl.entity;
 
 import java.util.concurrent.ArrayBlockingQueue;
 

@@ -26,10 +26,12 @@
     <![endif]-->
   </head>
 
-  <body style="padding-top: 60px;" onbeforeunload="	return '?'">
+  <!-- 
+<body style="padding-top: 60px;" onbeforeunload="	return '?'"> -->
+<body style="padding-top: 60px;"  >
 
 
-    <div class="container">
+    <div class="container" >
     	<div class="col-lg-12">
     	
     		<!-- ===== vCard Navigation ===== -->
@@ -53,6 +55,7 @@
 					  <div class="tab-pane active" id="about">
 					  <form id="form1">
 					 
+ 
 					  	<h3>获取单个页面中的图片</h3> 
 					  	<hr>
 					  	<p>
@@ -90,13 +93,13 @@
 					  	<h3>获取多个页面中的图片,每个页面url用换行符分割</h3>
 					  	<!-- <h5>Web Designer</h5> -->
 					  	<hr>
-					  	<p>
+					  	<p id="app">
 					  		多页面url:<textarea name="url1"  rows="3" cols="80" ></textarea><br>
 					  		元素选择器:<input name="select"  >
 					  		 
 					  		元素属性:<input name="attr">
 					  		<button id="btn2">提交</button>
-					  		<a  href="/downloadZip" class="btn" id="downloadZIPbtn">下载</a>
+					  		<a  href="/downloadZip"   v-bind:class="{'hidden': downloadbtn}"id="downloadZIPbtn">下载</a>
 					  		<!-- <button id="crawlbtn2">爬取</button> -->
 					    </p> 
 					  	<textarea id="viewURL2" rows="7" cols="80" readonly > </textarea>
@@ -132,13 +135,15 @@
     <script src="assets/js/jquery.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
     
-    <script src="assets/js/vue.min.js"></script>
+   <!--  <script src="assets/js/vue.min.js"></script> -->
+   <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
+​
 <script>
 //@ sourceURL=jsname.js
-
+/* 
 window.onbeforeunload= function(){
 				return "重新加载?";
-			} 
+			}  */
 
 /* $(window).load(function(){
 			window.onbeforeunload= function(){
@@ -283,6 +288,13 @@ window.onbeforeunload= function(){
 			alert(1)
 		})
     } */
+    new Vue({
+    	  el: '#app',
+    	  data: {
+    	 	
+    	    downloadbtn :true
+    	  }
+    	})
 	</script>    
     
   </body>
