@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import javax.imageio.stream.FileImageOutputStream;
 import org.springframework.stereotype.Component;
 import okhttp3.Call;
@@ -22,10 +24,14 @@ public class OKHttpTool {
 	   private static String port ;
 //	    static String url = "http://1212.ip138.com/ic.asp";
 //	    static String url = "http://t66y.com";
-	    private static OkHttpClient client = new OkHttpClient();
+	    private static OkHttpClient client =   new OkHttpClient.Builder()
+	    		.connectTimeout(20, TimeUnit.SECONDS)  
+	            .readTimeout(20, TimeUnit.SECONDS)  
+	            .build();
 	    
 	    public OKHttpTool(){
-	    	
+	       
+    
 	    }
 //	 static{
 //    	 System.setProperty("http.proxySet", "true");
@@ -104,7 +110,7 @@ public class OKHttpTool {
 	    return rs; 
 	}
 	//3
-	  /**
+	    /**
 	     * 异步 获取body中的byte[] 
 	     */
 	    public void asyncGetBodyByte(String IMAGE_URL,Collection<Map<String,Object>> collection) {  
@@ -115,8 +121,9 @@ public class OKHttpTool {
            	    rs.put("type", ""); 
                 collection.add(rs); 
                 return ;
-	    	}
-	        final Request request = new Request.Builder().get()
+	    	} 
+	        final Request request = new Request.Builder()
+	        		.get()
 	                .url(IMAGE_URL)
 	                .build();
 
@@ -128,8 +135,7 @@ public class OKHttpTool {
 	           	    rs.put("val", new byte[0]);
 	           	    rs.put("type", ""); 
 	                collection.add(rs); 
-	            }
-
+	            } 
 	            @Override
 	            public void onResponse(Call call, Response response) throws IOException {
 	            	   Headers responseHeaders = response.headers();
@@ -191,13 +197,37 @@ public class OKHttpTool {
 	  }
 
 	  public static void main(String[] args) throws Exception {
-	//		OKHttpTool ok=new OKHttpTool();
+		
+	 	OKHttpTool ok=new OKHttpTool();
 		  //System.out.println(ok.run("http://tenie.net"));
 		// ok.run();
-		// ok.asyncGet("https://www.tenie.net/lib/img/JGT_meitu_3.jpg");
-//		
-		  Map<String, Object> rsMap =   new OKHttpTool().getBodyBytesAndType("https://www.tenie.net/lib/assets/img/codeMonkey.ico");
-		 System.out.println(rsMap.get("type")); 
+	 	Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				int i = 0;
+				while(i < 21) {
+					
+					try {
+						Thread.sleep(1000);
+						System.out.println(i++);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+	 		 
+	 	 });
+	 	thread.start();
+	 	System.out.println("begin..");
+	 	byte[] b = ok.getBodyBytes("http://cdn1.metarthunter.com/content/140303/zlatka-a-bunnu-15.jpg");
+	 	 
+	 	//			
+		 System.out.println(b.length);
+//		  Map<String, Object> rsMap =   new OKHttpTool().getBodyBytesAndType("https://www.tenie.net/lib/assets/img/codeMonkey.ico");
+//		 System.out.println(rsMap.get("type")); 
 		} 
 
 }

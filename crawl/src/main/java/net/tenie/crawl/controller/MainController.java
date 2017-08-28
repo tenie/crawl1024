@@ -15,26 +15,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import net.tenie.crawl.entity.ControllerRecord;
 import net.tenie.crawl.service.MainService;
+import net.tenie.crawl.tools.ApplicationContextHelper;
 import net.tenie.crawl.tools.OKHttpTool;
  
  
 
 @Controller //@RestController 等价@Controller + @ResponseBody
-public class MainController {
-	volatile private Boolean isCrawling = false; 
-	volatile private Set<String> cache;
-	volatile private String finishzipFile = "";
+public class MainController { 
 
 	@Autowired
-	private OKHttpTool tool ; // = 	new OKHttpTool(); 
-	
+	private OKHttpTool tool ;   
 	@Autowired
 	MainService service;
-	@Autowired
-	ControllerRecord record;
+//	@Autowired
+//	ControllerRecord record;
 //	@Value("${image.save.path}")
 //	private String fileSavePath;
-	private String fileSavePath = System.getProperty("user.home");
+//	private String fileSavePath = System.getProperty("user.home");
 	Logger logger = LoggerFactory.getLogger(MainController.class); 
 //	 String fileName = request.getSession().getServletContext().getRealPath("/");
 		/**
@@ -45,8 +42,12 @@ public class MainController {
 		public String index(){ 
 			return "forward:/index.html";
 		}
-		 
 		
+//		http://localhost:8080/downloadZip
+//		@RequestMapping("/downloadZip")
+//		public String indexdownloadZip(){ 
+//			return "forward:/index.html";
+//		}  
 		
 		/**
 		 * 解析单个页面中要获取的url字符串, url字符串返回给前端, 并在新的线程中下载这些url对于的图片,
@@ -63,6 +64,8 @@ public class MainController {
 		@RequestMapping(value="/url",method=RequestMethod.POST)
 		@ResponseBody
 		public Set<String> geturl(@RequestParam Map<String, String> queryParam) throws Exception{	    
+			
+			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 			System.out.println("/url === "+record.toString());
 	        return service.singleAnalyzeUrl(record,queryParam);
 		}
@@ -82,6 +85,7 @@ public class MainController {
 		@RequestMapping(value="/urls",method=RequestMethod.POST)
 		@ResponseBody
 		public Set<String> geturls(@RequestParam Map<String, String> queryParam) throws Exception{  
+			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 	        return service.multiAnalyzeUrl(record, queryParam);
 		}
 		
@@ -97,7 +101,7 @@ public class MainController {
 		@RequestMapping(value="/downloadImage",method=RequestMethod.POST) 
 		@ResponseBody
 		public String downloadImage(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{
- 
+			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 			return service.useImgUrlsDownload(queryParam,record);	       
 		}
 		
@@ -112,6 +116,7 @@ public class MainController {
 		@RequestMapping(value="/cacheDownload",method=RequestMethod.GET) 
 		@ResponseBody
 		public String cacheDownload(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{
+			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 			return service.cacheDownload(record); 	       
 		}
 		
@@ -125,6 +130,7 @@ public class MainController {
 		@RequestMapping(value="/downloadFinish",method=RequestMethod.GET) 
 		@ResponseBody
 		public String downloadFinish(@RequestParam Map<String, String> queryParam,HttpServletRequest request) throws Exception{ 
+			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 			System.out.println("/downloadFinish==="+record.toString());
 			return service.queryAnalyzeFinish(record);
 		}
@@ -139,8 +145,8 @@ public class MainController {
 		 */
 		@RequestMapping(value="/downloadZip",method=RequestMethod.GET) 
 		public void downloadFinishZip(HttpServletRequest request, HttpServletResponse response) throws Exception{
-			service.downloadFinishZip(record,response); 
-	       
+			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
+			service.downloadFinishZip(record,response);  
 		}
 		 
 //		/**

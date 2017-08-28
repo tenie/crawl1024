@@ -1,17 +1,29 @@
 package net.tenie.crawl.entity;
 
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope("session")
 public class ControllerRecord {
 	volatile private boolean  isCrawling = false;  
 	volatile private boolean isDownloading = false; 
 	volatile private Set<String> cache ;
-	private String fileSavePath = System.getProperty("user.home");
+	private String fileSavePath = System.getProperty("user.home").replace("\\", "/");  
 	volatile private String finishzipFile = "";
+	private static ArrayBlockingQueue queue;
 	
+	
+	
+	public static ArrayBlockingQueue getQueue() {
+		return queue;
+	}
+	public static void setQueue(ArrayBlockingQueue queue) {
+		ControllerRecord.queue = queue;
+	}
 	public boolean isCrawling() {
 		return isCrawling;
 	}

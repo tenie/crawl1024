@@ -16,7 +16,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URLEncoder; 
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,7 +39,21 @@ public class MainServiceImpl implements MainService{
 		@Autowired
 		private OKHttpTool tool ;
 		 
+		private static <T> T[] trimArray(T[] t){ 
+			Set<T> set = new HashSet<T>(); 
+			Collections.addAll(set, t);
+			set.remove("");  
+			return (T[])set.toArray();
+		}
 		
+		public static void main(String[] args) {
+//			String[]  arr = {"","aa","","bb"};
+//			System.out.println(Arrays.toString(trimArray(arr)));;
+			
+			SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+//			simpledateformat.applyPattern("yyyy-MM-dd_HH:mm:ss");
+			System.out.println(simpledateformat.format(new Date()));
+		}
 		
 		/**
 		 * 异步下载, 输出.zip文件到指定目录
@@ -44,14 +61,18 @@ public class MainServiceImpl implements MainService{
 		 * 2. 循环判断集合是否满(根据多少个url==集合多少个元素), 集合满了开始获取集合中的元素, 进行zip打包输出到临时目录
 		 * 3. 把打包的临时zip文件全路径缓存起来,下载controller,根据这个缓存的路径名来下载
 		 * @param urlArry
-		 * @param fileName
+		 * @param fileName 压缩文件全路径
 		 * @throws Exception
 		 */
 		private String asyncDownloadActionZip(String[] urlArry ,String fileName) throws Exception{
-			System.out.println("begin....."); 
-			String finishZIPfile = fileName+"/image"+new Date().getTime()+".zip";
-			BinData.setQueue(urlArry.length);
-			ArrayBlockingQueue<Map<String,Object>>  queue = 	BinData.getQueue();
+			System.out.println("begin.....::::"); 
+			System.out.println(Arrays.toString(urlArry));
+			//String[] urlArry = trimArray(sUrlArry); 
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");  
+			String finishZIPfile = fileName+"/image_"+sdf.format(new Date())+".zip"; 
+//			BinData.setQueue(urlArry.length);
+//			ArrayBlockingQueue<Map<String,Object>>  queue = 	BinData.getQueue();
+			ArrayBlockingQueue<Map<String,Object>>  queue =  new ArrayBlockingQueue<Map<String,Object>>(urlArry.length);
 			for(String url : urlArry) {
 				System.out.println("carwling= "+url);
 				Map<String, Object> rsMap; 
@@ -78,9 +99,7 @@ public class MainServiceImpl implements MainService{
 					    }
 				   } finally {
 					   zipOut.close();
-				  }
-				  
-				  
+				  } 
 				   break; //退出循环
 				  }else{
 					  System.out.println(queue.size());
@@ -132,6 +151,7 @@ public class MainServiceImpl implements MainService{
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try { 
+						Thread.sleep(25000);
 						record.setCrawling(true);
 						record.setDownloading(true);
 						record.setFinishzipFile( asyncDownloadActionZip(urlArry,fileName)); 
@@ -147,7 +167,7 @@ public class MainServiceImpl implements MainService{
 			if(! record.isCrawling()) {
 				System.out.println("tets==="+ record.isCrawling()); 
 				record.setCrawling(true); 
-				Thread.sleep(5000);
+				
 				thread.start();
 				System.out.println("tets2==="+ record.isCrawling());
 			}
@@ -203,7 +223,7 @@ public class MainServiceImpl implements MainService{
 				record.setCrawling(true);
 				thread.start(); 
 			} 
-			return null;
+			return rs;
 		}
 		@Override
 		public String queryAnalyzeFinish(ControllerRecord record) {
@@ -247,39 +267,39 @@ public class MainServiceImpl implements MainService{
 				return "开始爬取..."; 
 		}
 		/**
-		 * 把下载的图片.zip包传递给客户端
+		 * 把下载的  图片.zip包   传递给客户端
 		 */
 		@Override
 		public void downloadFinishZip(ControllerRecord record,HttpServletResponse response) throws IOException {
-			 String finishzipFile = record.getFinishzipFile();
-				
-				if(finishzipFile == null || "".equals(finishzipFile)){ 
-					throw new RuntimeException("no file"); 
-				} 
-				File file = new File(finishzipFile);   
-		        //判断文件是否存在如果不存在就返回默认图标  
-		        if(file.exists() && file.isFile() && file.canRead()) { 
-		        	System.out.println("/downloadZip.......");
-			        FileInputStream inputStream = new FileInputStream(file);  
-			        byte[] data = new byte[(int)file.length()];  
-			        int length = inputStream.read(data);  
-			        inputStream.close();  
-			        //编码否则中文浏览器不显示
-			        String downloadFilename = "image.zip";
-			        downloadFilename = URLEncoder.encode(downloadFilename, "UTF-8");  
+		    String finishzipFile = record.getFinishzipFile();
+			
+			if(finishzipFile == null || "".equals(finishzipFile)){ 
+				throw new RuntimeException("no file"); 
+			} 
+			File file = new File(finishzipFile);   
+	        //判断文件是否存在如果不存在就返回默认图标  
+	        if(file.exists() && file.isFile() && file.canRead()) { 
+	        	System.out.println("/downloadZip.......");
+		        FileInputStream inputStream = new FileInputStream(file);  
+		        byte[] data = new byte[(int)file.length()];  
+		        int length = inputStream.read(data);  
+		        inputStream.close();  
+		        //编码否则中文浏览器不显示
+		        String downloadFilename = "image"+new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date())+".zip";
+		        downloadFilename = URLEncoder.encode(downloadFilename, "UTF-8");  
 //			        response.setContentType("image/png");   //这个浏览器会直接现实图片,所以改为下面的配置,可以实现下载 
-			        // 写明要下载的文件的大小 
-			        response.setContentLength((int) file.length());  //这个不写也没问题
-			        response.setHeader("Content-Disposition", "attachment;filename="+downloadFilename);
-			        response.setContentType("application/octet-stream");
-			        OutputStream stream = response.getOutputStream();  
-			        stream.write(data);  
-			        stream.flush();  
-			        stream.close(); 
-			        record.setFinishzipFile(""); 
-			        DeleteFile.deleteAllFilesOfDir(file);
-			        System.out.println("finishzipFile=="+finishzipFile);
-		        } 
+		        // 写明要下载的文件的大小 
+		        response.setContentLength((int) file.length());  //这个不写也没问题
+		        response.setHeader("Content-Disposition", "attachment;filename="+downloadFilename);
+		        response.setContentType("application/octet-stream");
+		        OutputStream stream = response.getOutputStream();  
+		        stream.write(data);  
+		        stream.flush();  
+		        stream.close(); 
+		        record.setFinishzipFile(""); 
+		        DeleteFile.deleteAllFilesOfDir(file);
+		        System.out.println("finishzipFile=="+finishzipFile);
+		    } 
 			
 		}
 		
@@ -298,21 +318,19 @@ public class MainServiceImpl implements MainService{
 			 //设置线程
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
-				try {
-					record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName));
-				 
-				} catch (Exception e) { 
-					e.printStackTrace();	
-				}finally {
-					record.setCrawling(false); 
-				} 
-			}
+					try {
+						record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName)); 
+					} catch (Exception e) { 
+						e.printStackTrace();	
+					}finally {
+						record.setCrawling(false); 
+					} 
+			    }
 			}); 
 				//启动线程
 				thread.start();
 				record.setCrawling(true); 
 				return "开始爬取...";
-			 
 		}
 		
 		/**

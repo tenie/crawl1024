@@ -99,7 +99,7 @@
 					  		 
 					  		元素属性:<input name="attr">
 					  		<button id="btn2">提交</button>
-					  		<a  href="/downloadZip"   v-bind:class="{'hidden': downloadbtn}"id="downloadZIPbtn">下载</a>
+					  		<a  href="/downloadZip"  id="downloadZIPbtn">下载</a> <!--   v-bind:class="{'hidden': downloadbtn}"-->
 					  		<!-- <button id="crawlbtn2">爬取</button> -->
 					    </p> 
 					  	<textarea id="viewURL2" rows="7" cols="80" readonly > </textarea>
@@ -288,13 +288,13 @@ window.onbeforeunload= function(){
 			alert(1)
 		})
     } */
-    new Vue({
+   /*  new Vue({
     	  el: '#app',
     	  data: {
     	 	
     	    downloadbtn :true
     	  }
-    	})
+    	}) */
 	</script>    
     
   </body>
