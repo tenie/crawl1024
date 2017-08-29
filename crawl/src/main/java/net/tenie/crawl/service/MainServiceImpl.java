@@ -12,17 +12,20 @@ import net.tenie.crawl.tools.JsoupTool;
 import net.tenie.crawl.tools.OKHttpTool;
 
 import java.io.File;
-import java.io.FileInputStream; 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -39,20 +42,31 @@ public class MainServiceImpl implements MainService{
 		@Autowired
 		private OKHttpTool tool ;
 		 
-		private static <T> T[] trimArray(T[] t){ 
+		private static <T>  List<T> trimArray(T[] t){ 
 			Set<T> set = new HashSet<T>(); 
 			Collections.addAll(set, t);
 			set.remove("");  
-			return (T[])set.toArray();
+			return new ArrayList(set);
 		}
 		
-		public static void main(String[] args) {
+		public static void main(String[] args) throws  Exception {
 //			String[]  arr = {"","aa","","bb"};
-//			System.out.println(Arrays.toString(trimArray(arr)));;
+//			String[]  arr2 =   (String[]) trimArray(arr).toArray();
+//			System.out.println(Arrays.toString(arr2));;
 			
 			SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 //			simpledateformat.applyPattern("yyyy-MM-dd_HH:mm:ss");
 			System.out.println(simpledateformat.format(new Date()));
+			
+			//C:/Users/ten/Downloads/image2017-08-28_16-31-39.zip
+			  File zipFile = new File("C:/Users/ten/Downloads/image2017-08-28_16-31-39.zip");  
+			   ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
+			   byte[]	 imgB  = {1,2,3,4};
+			   for(int i = 0 ;i<5;i++) {
+				   zip(zipOut, "test.test"+i,imgB); 
+			   }
+			   
+			   zipOut.close();
 		}
 		
 		/**
@@ -66,52 +80,38 @@ public class MainServiceImpl implements MainService{
 		 */
 		private String asyncDownloadActionZip(String[] urlArry ,String fileName) throws Exception{
 			System.out.println("begin.....::::"); 
-			System.out.println(Arrays.toString(urlArry));
-			//String[] urlArry = trimArray(sUrlArry); 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");  
-			String finishZIPfile = fileName+"/image_"+sdf.format(new Date())+".zip"; 
-//			BinData.setQueue(urlArry.length);
-//			ArrayBlockingQueue<Map<String,Object>>  queue = 	BinData.getQueue();
-			ArrayBlockingQueue<Map<String,Object>>  queue =  new ArrayBlockingQueue<Map<String,Object>>(urlArry.length);
+			System.out.println(Arrays.toString(urlArry));   
+			int arrSize = urlArry.length;
+			//图片下载
+			ArrayBlockingQueue<Map<String,Object>>  queue =  new ArrayBlockingQueue<Map<String,Object>>(arrSize);
 			for(String url : urlArry) {
 				System.out.println("carwling= "+url);
 				Map<String, Object> rsMap; 
 			    tool.asyncGetBodyByte(url,queue);  
 		   } 
-		   boolean tf =true;
-		   while(tf){
-			   
-			   if(queue.size()==urlArry.length){
-				   Iterator<Map<String,Object>>   it = queue.iterator();
-				   // 将队列中的图片byte 输出到zip中
-				    File zipFile = new File(finishZIPfile);  
-				    ZipOutputStream   zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
-				   try {
-					   while(it.hasNext()){
-						   System.out.println("download image...");
-						   Map<String, Object> rsMap =  it.next();
-						   byte[]	 imgB = (byte[]) rsMap.get("val");
-						   String type = (String) rsMap.get("type"); 
-						   Thread.sleep(100);
-						  // tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
-						   zip(zipOut, "image"+new Date().getTime()+"."+tool.typeChange(type),imgB);
-						    
-					    }
-				   } finally {
-					   zipOut.close();
-				  } 
-				   break; //退出循环
-				  }else{
-					  System.out.println(queue.size());
-					  Thread.sleep(500);
-				  }
-				  
-		   }
-		   return finishZIPfile;
-		
+		   //图片保存到硬盘 
+		   String finishZIPfile = fileName+"/image_"+new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date())+".zip";  
+		   File zipFile = new File(finishZIPfile); 
+		   ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
+		   try { 
+			   for(int i=0; i<arrSize; i++) { 
+				   System.out.println("队列中获取"+i);
+				   System.out.println(queue.size());
+				// 将队列中的图片byte 输出到zip中 
+				    Map<String, Object> rsMap =  queue.take();
+				    byte[]	 imgB = (byte[]) rsMap.get("val");
+				    String type = (String) rsMap.get("type");  
+				    zip(zipOut, "image"+new Date().getTime()+"."+tool.typeChange(type),imgB); 
+				    System.out.println("结束队列中获取"+i);
+			   }  
+		   } finally {
+			   if( zipOut !=null)
+			   zipOut.close(); 
+		   } 
+		   return finishZIPfile; 
 		}
 		
-		private void zip(ZipOutputStream  zipOut,String fileName,byte[] b) throws Exception{ 
+		private static void zip(ZipOutputStream  zipOut,String fileName,byte[] b) throws Exception{  
 			zipOut.putNextEntry(new ZipEntry(fileName));
 			zipOut.write(b);
 			zipOut.flush();
@@ -151,7 +151,7 @@ public class MainServiceImpl implements MainService{
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try { 
-						Thread.sleep(25000);
+//						Thread.sleep(25000);
 						record.setCrawling(true);
 						record.setDownloading(true);
 						record.setFinishzipFile( asyncDownloadActionZip(urlArry,fileName)); 

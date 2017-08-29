@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="assets/ico/favicon.png">
+    <link rel="shortcut icon" href="assets/img/timg.jpg">
 
-    <title>Victoria vCard - Free Bootstrap 3 Theme</title>
-
+    <title>爬图小虫</title>
+<!--/crawl/src/main/resources/static/assets/img/timg.jpg  -->
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <link href="assets/css/font-awesome.min.css" rel="stylesheet">
@@ -24,6 +24,11 @@
       <script src="assets/js/html5shiv.js"></script>
       <script src="assets/js/respond.min.js"></script>
     <![endif]-->
+    <style>
+    	p{
+    		 margin-bottom: 10px;
+    	}
+    </style>
   </head>
 
   <!-- 
@@ -58,17 +63,19 @@
  
 					  	<h3>获取单个页面中的图片</h3> 
 					  	<hr>
-					  	<p>
-					  		单个页面url:<input name="url1" style="width: 506px;" >
-					  		<br>
-					  		元素选择器表达式:<input name="select"  >
-					  		 
-					  		元素属性:<input name="attr">
-					  		<button id="btn1">提交</button>
-					  	<!-- 	<button id="crawlbtn1">爬取</button> -->
-					  		
-					  		<!-- <button id="btnTEST" onclick="alert(1)">TEST</button> -->
-					    </p> 
+					  	  <div style="margin-bottom: 10px;"> 
+					  	 
+					  		<p style="margin-bottom: 5px;">
+					  			单个页面url:<input name="url1" style="width: 506px;" >
+					  		</p>  
+					  		<span> 
+					  			元素选择器表达式:<input name="select"  >
+					  	    </span>  
+					  		<span>
+					  			元素属性:<input name="attr">
+					  		</span>  
+					  		<button id="btn1">提交</button> 
+					     </div>
 					  	<textarea id="viewURL" rows="12" cols="80" readonly > </textarea>
 			
 					  </form>
@@ -93,14 +100,20 @@
 					  	<h3>获取多个页面中的图片,每个页面url用换行符分割</h3>
 					  	<!-- <h5>Web Designer</h5> -->
 					  	<hr>
-					  	<p id="app">
+					  	<p>
 					  		多页面url:<textarea name="url1"  rows="3" cols="80" ></textarea><br>
-					  		元素选择器:<input name="select"  >
-					  		 
-					  		元素属性:<input name="attr">
-					  		<button id="btn2">提交</button>
-					  		<a  href="/downloadZip"  id="downloadZIPbtn">下载</a> <!--   v-bind:class="{'hidden': downloadbtn}"-->
-					  		<!-- <button id="crawlbtn2">爬取</button> -->
+					  		<div>
+					  			<span>
+					  			元素选择器:<input name="select"  >
+						  		</span> 
+						  		<span>
+						  			元素属性:<input name="attr">
+						  		</span>  
+						  		<button id="btn2">提交</button>
+						  		<span  id="app">
+						  			<a  href="/downloadZip"  v-bind:class="{'hidden': downloadbtn}" id="downloadZIPbtn">下载</a> <!--   v-bind:class="{'hidden': downloadbtn}"-->
+						  		</span>
+					  		</div>  
 					    </p> 
 					  	<textarea id="viewURL2" rows="7" cols="80" readonly > </textarea>
 					  <!-- 	<p class="pull-right red"><i class="icon-heart"></i></p> -->
@@ -114,7 +127,7 @@
 						  <div class="row">
 						   		<div class="col-xs-6">
 							  		<textarea name="imgUrls" id="imgUrls" rows="12" cols="80" ></textarea><br>
-							  		<button id="imgDownloadBtn">爬取</button>
+							  		<button  id="imgDownloadBtn" style="margin-top: 10px;">爬取</button>
 							   </div><!-- col-xs-6 -->
 							  
 						  </div><!-- row -->
@@ -133,17 +146,16 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="assets/js/jquery.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    
-   <!--  <script src="assets/js/vue.min.js"></script> -->
-   <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script> 
+    <script src="assets/js/vue.min.js"></script>  
+   <!-- <script src="https://cdn.bootcss.com/vue/2.2.2/vue.min.js"></script> -->
 ​
 <script>
 //@ sourceURL=jsname.js
-/* 
+  
 window.onbeforeunload= function(){
 				return "重新加载?";
-			}  */
+			}   
 
 /* $(window).load(function(){
 			window.onbeforeunload= function(){
@@ -288,14 +300,14 @@ window.onbeforeunload= function(){
 			alert(1)
 		})
     } */
-   /*  new Vue({
+     new Vue({
     	  el: '#app',
     	  data: {
     	 	
     	    downloadbtn :true
     	  }
-    	}) */
-	</script>    
+    	})  
+</script>    
     
   </body>
 </html>
