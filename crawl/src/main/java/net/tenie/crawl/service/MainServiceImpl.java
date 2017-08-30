@@ -79,7 +79,8 @@ public class MainServiceImpl implements MainService{
 		 * @throws Exception
 		 */
 		private String asyncDownloadActionZip(String[] urlArry ,String fileName) throws Exception{
-			System.out.println("begin.....::::"); 
+			System.out.println("begin....."+ System.getProperty("http.proxyHost")+":"+System.getProperty("http.proxyPort")); 
+			
 			System.out.println(Arrays.toString(urlArry));   
 			int arrSize = urlArry.length;
 			//图片下载
@@ -165,11 +166,11 @@ public class MainServiceImpl implements MainService{
 			    }
 			});
 			if(! record.isCrawling()) {
-				System.out.println("tets==="+ record.isCrawling()); 
-				record.setCrawling(true); 
-				
-				thread.start();
-				System.out.println("tets2==="+ record.isCrawling());
+				 System.out.println("tets==="+ record.isCrawling()); 
+				 record.setCrawling(true); 
+				 record.setThread(thread);
+				 thread.start();
+				 System.out.println("tets2==="+ record.isCrawling());
 			}
 			return rs; 
 	       
@@ -220,8 +221,9 @@ public class MainServiceImpl implements MainService{
 			    }
 			});
 			if(! record.isCrawling()) {
-				record.setCrawling(true);
-				thread.start(); 
+				 record.setCrawling(true);
+				 record.setThread(thread);
+				 thread.start(); 
 			} 
 			return rs;
 		}
@@ -248,6 +250,7 @@ public class MainServiceImpl implements MainService{
 			 }else{
 				 return "没人东西可爬取";
 			 }  
+			 
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try { 
@@ -260,10 +263,9 @@ public class MainServiceImpl implements MainService{
 				} 
 			}
 			});
-			
-		 
-				thread.start();
-				record.setCrawling(true);
+			    record.setCrawling(true);
+			    record.setThread(thread);
+				thread.start();  
 				return "开始爬取..."; 
 		}
 		/**
@@ -319,6 +321,7 @@ public class MainServiceImpl implements MainService{
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try {
+						
 						record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName)); 
 					} catch (Exception e) { 
 						e.printStackTrace();	
@@ -328,6 +331,7 @@ public class MainServiceImpl implements MainService{
 			    }
 			}); 
 				//启动线程
+			 	record.setThread(thread);
 				thread.start();
 				record.setCrawling(true); 
 				return "开始爬取...";
@@ -362,6 +366,7 @@ public class MainServiceImpl implements MainService{
 			}
 			});
 			 	record.setCrawling(true);
+			 	record.setThread(thread);
 				thread.start(); 
 				return "开始爬取...";
 			 

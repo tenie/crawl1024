@@ -49,7 +49,27 @@
 					  <li><a href="#profile">代理配置</a></li>
 					  <li><a href="#contact">图片下载</a></li>
 					<!--   <li><a  id="foobtn">foobtn</a></li> -->
-					</ul>    			
+					</ul>    
+					<div>
+						
+						<div id="app" style=" margin-top: 15px;	">
+							<span  >
+							  <a  href="/downloadZip"  v-bind:class="{'hidden': downloadbtn}" id="downloadZIPbtn">下载</a> <!--   v-bind:class="{'hidden': downloadbtn}"-->
+							</span>
+						 	<span>
+						 		状态: 
+						 	</span> 
+							<span v-bind:class="{'hidden': ! run }"  style="  height: 15px;">
+								<button onclick="stop()" style="background-color: red;border: 0px;height: 15px;width: 15px;" ></button> 		
+							</span>
+							<span v-bind:class="{'hidden':  run }" >
+								<button  style="background-color: #D4D4D4;border: 0px;height: 15px;width: 15px;"></button> 				
+							</span>
+						</div>
+						
+						<p></p>
+						
+					</div>			
 				</div><!-- col-md-4 -->
 
     		<!-- ===== vCard Content ===== -->
@@ -58,13 +78,13 @@
 	    			
 	    			  <!-- ===== First Tab ===== -->
 					  <div class="tab-pane active" id="about">
-					  <form id="form1">
+					
 					 
  
 					  	<h3>获取单个页面中的图片</h3> 
 					  	<hr>
 					  	  <div style="margin-bottom: 10px;"> 
-					  	 
+					  	   <form id="form1">
 					  		<p style="margin-bottom: 5px;">
 					  			单个页面url:<input name="url1" style="width: 506px;" >
 					  		</p>  
@@ -73,12 +93,14 @@
 					  	    </span>  
 					  		<span>
 					  			元素属性:<input name="attr">
-					  		</span>  
+					  		</span> 
+					  		</form> 
+					  		<br>
 					  		<button id="btn1">提交</button> 
 					     </div>
 					  	<textarea id="viewURL" rows="12" cols="80" readonly > </textarea>
 			
-					  </form>
+					 
 					  </div><!-- tab about -->
 					  
 	    			  <!-- ===== Second Tab ===== -->
@@ -100,24 +122,26 @@
 					  	<h3>获取多个页面中的图片,每个页面url用换行符分割</h3>
 					  	<!-- <h5>Web Designer</h5> -->
 					  	<hr>
-					  	<p>
-					  		多页面url:<textarea name="url1"  rows="3" cols="80" ></textarea><br>
-					  		<div>
-					  			<span>
-					  			元素选择器:<input name="select"  >
-						  		</span> 
-						  		<span>
-						  			元素属性:<input name="attr">
-						  		</span>  
-						  		<button id="btn2">提交</button>
-						  		<span  id="app">
-						  			<a  href="/downloadZip"  v-bind:class="{'hidden': downloadbtn}" id="downloadZIPbtn">下载</a> <!--   v-bind:class="{'hidden': downloadbtn}"-->
-						  		</span>
-					  		</div>  
+					 
+					  	<p>   
+					  		<form id="form2">
+						  		多页面url:<textarea name="url1"  rows="3" cols="80" ></textarea><br>
+						  		<div>
+						  			<span>
+						  			元素选择器:<input name="select"  >
+							  		</span> 
+							  		<span>
+							  			元素属性:<input name="attr">
+							  		</span>   
+						  		</div>  
+					  		</form>
+					  		 <button id="btn2">提交</button>
 					    </p> 
+					    
+					    
 					  	<textarea id="viewURL2" rows="7" cols="80" readonly > </textarea>
 					  <!-- 	<p class="pull-right red"><i class="icon-heart"></i></p> -->
-					  </form>
+					 
 					  </div><!-- /Tab Portfolio -->
 					  
 	    			  <!-- ===== Fourth Tab ===== -->
@@ -152,19 +176,67 @@
 ​
 <script>
 //@ sourceURL=jsname.js
-  
+/*   
 window.onbeforeunload= function(){
 				return "重新加载?";
 			}   
-
+ */
 /* $(window).load(function(){
 			window.onbeforeunload= function(){
 				return "重新加载?";
 			} 
 		}) */
-		
-	$('#myTab a').click(function (e) {
-	  e.preventDefault()
+	var btn  ;
+	var done ;	
+	function stop(){ 
+		$.get("/stopRuning",function(data){
+			if(data == "任务已经暂停"){
+				v.run=false;
+				if(done){
+					clearInterval(done); 
+				}
+				
+				if(btn){
+					btn.removeAttr("disabled");
+					btn.text("提交");
+				}
+				 
+			}
+			alert(data)
+		})	 	
+  }
+	function downloadZipFile(){ 
+		//轮询是否下载完成, 完成下载,获取zip包
+		  done = setInterval(function(){
+			if(v.run){
+				$.get("/hasFileCanDownload",function(data){
+					if(data == "yes"){
+						$.get("/downloadFinish",function(rs){
+							//alert("done"+index++);
+							if(rs == "done"){
+								clearInterval(done); 
+							//	$("#downloadZIPbtn").click(); //jQuery居然不能触发a 的click事件,用下面的原生写法
+								document.getElementById("downloadZIPbtn").click();  
+								//alert("ok");
+								btn.removeAttr("disabled");
+								btn.text("提交");
+								v.run=false; 
+							} 
+						})
+					}else{
+						btn.removeAttr("disabled");
+						btn.text("提交");
+						v.run=false; 
+						alert("任务已经被中断...")
+					}
+				})  
+			}
+			
+		},3000)
+	}
+ 
+	$('#myTab a').click(function (e) { 
+	  e.preventDefault() 
 	  $(this).tab('show')
 	})	
 	
@@ -175,9 +247,10 @@ window.onbeforeunload= function(){
 		
 	})
 	
-	$("#btn1").click(function(){
-		var btn =$(this)
-		var btntext = btn.text();
+	
+	$("#btn1").click(function(){ 
+		v.run=true;
+	    btn =$(this) 
 		btn.attr("disabled",true);
 		btn.text("下载中...")
 		
@@ -188,28 +261,13 @@ window.onbeforeunload= function(){
 			})
 			$("#viewURL").val(html);
 			
-			//轮询是否下载完成, 完成下载,获取zip包
-			var done = setInterval(function(){
-				$.get("/downloadFinish",function(rs){
-					//alert("done"+index++);
-					if(rs == "done"){
-						clearInterval(done); 
-					//	$("#downloadZIPbtn").click(); //jQuery居然不能触发a 的click事件,用下面的原生写法
-						document.getElementById("downloadZIPbtn").click();
-						
-						btn.removeAttr("disabled");
-						btn.text(btntext);
-						//alert("ok");
-					}else{
-						
-					}
-				})
-			},2000)
-			
-			
+			downloadZipFile();  
 		})
 		return false;
 	})
+	
+	
+	
 	
 	$("#btn2").click(function(){
 		var btn =$(this)
@@ -224,7 +282,8 @@ window.onbeforeunload= function(){
 			})
 			$("#viewURL2").val(html);
 			//轮询是否下载完成, 完成下载,获取zip包
-			var done = setInterval(function(){
+			downloadZipFile();
+		/* 	var done = setInterval(function(){
 				$.get("/downloadFinish",function(rs){
 					//alert("done"+index++);
 					if(rs == "done"){
@@ -238,7 +297,7 @@ window.onbeforeunload= function(){
 						
 					}
 				})
-			},2000)
+			},2000) */
 		})
 		return false;
 	})
@@ -252,6 +311,7 @@ window.onbeforeunload= function(){
 			alert(data) 
 		})
 		var done = setInterval(function(){
+			
 				$.get("/downloadFinish",function(rs){
 					//alert("done"+index++);
 					if(rs == "done"){
@@ -300,13 +360,26 @@ window.onbeforeunload= function(){
 			alert(1)
 		})
     } */
-     new Vue({
+     var v = new Vue({
     	  el: '#app',
     	  data: {
-    	 	
+    	    run:false,
     	    downloadbtn :true
     	  }
     	})  
+    
+    $(function(){
+    	$.get("/isRuning",function(data){
+    		if(data=="yes"){ 
+    			 
+    			v.run = true;	
+    			setTimeout(function(){
+    				alert("后台有任务在运行")
+    			},100)
+    		}
+    		
+    	})
+    })
 </script>    
     
   </body>

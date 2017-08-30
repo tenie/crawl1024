@@ -190,7 +190,7 @@ public class OKHttpTool {
 			rs = "gif";
 			break;
 		default:
-			break;
+			rs = "jpg";
 		}
 		  
 		  return rs;

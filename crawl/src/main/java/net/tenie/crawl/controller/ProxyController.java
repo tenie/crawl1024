@@ -33,6 +33,6 @@ public class ProxyController {
 	public  String callfun(){
 		
 		System.out.println(System.getProperty("http.proxyHost"));
-		return System.getProperty("http.proxyHost");  
+		return System.getProperty("http.proxyHost")+":"+System.getProperty("http.proxyPort");  
 	}
 }

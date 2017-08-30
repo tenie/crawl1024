@@ -26,8 +26,10 @@ public class JsoupTool {
 //		for(Element i :e){
 //		System.out.println(i.attr("src"));
 //		}
-		
-		Set rs= JsoupTool.getUrlsSet("https://www.tenie.net/article/18", "img","src");
+		System.setProperty("http.proxySet", "true");
+	    System.setProperty("http.proxyHost", "127.0.0.1");
+	    System.setProperty("http.proxyPort", "1080");
+		Set rs= JsoupTool.getUrlsSet("http://t66y.com/htm_mob/8/1705/2418715.html", "input","src");
 //		List rs=JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
 		//List rs=JsoupTool.getUrls("/Users/tenie/Desktop/1024.html", "input[type='image']");
 		System.out.println(rs);

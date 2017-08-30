@@ -145,8 +145,74 @@ public class MainController {
 		 */
 		@RequestMapping(value="/downloadZip",method=RequestMethod.GET) 
 		public void downloadFinishZip(HttpServletRequest request, HttpServletResponse response) throws Exception{
-			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
-			service.downloadFinishZip(record,response);  
+			try {
+				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
+				service.downloadFinishZip(record,response);  
+			} catch (Exception e) {
+			    e.printStackTrace();
+			}
+			
+		}
+		
+		/**
+		 * 中断任务
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value="/stopRuning",method=RequestMethod.GET) 
+		@ResponseBody
+		public String  stopRuning(HttpServletRequest request, HttpServletResponse response) {
+			try {
+				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
+				Thread thread  = record.getThread();
+				if(thread == null )return "根本就没有任务在运行"; 
+				record.clear(); 
+			} catch (Exception e) {
+				e.printStackTrace(); 
+				return "出错了..";
+			} 
+			return "任务已经暂停";  
+		}
+		
+		/**
+		 * 查询是否在运行任务
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value="/isRuning",method=RequestMethod.GET) 
+		@ResponseBody
+		public String  isRuning(HttpServletRequest request, HttpServletResponse response) {
+			try {
+				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
+				Thread thread  = record.getThread();
+				if(thread == null || ! thread.isAlive() )return "no" ; else return "yes";  
+			} catch (Exception e) {
+				e.printStackTrace(); 
+				return "出错了..";
+			} 
+			 
+		}
+		
+		/**
+		 * 查询是否有文件可以下载
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value="/hasFileCanDownload",method=RequestMethod.GET) 
+		@ResponseBody
+		public String  hasFileCanDownload(HttpServletRequest request, HttpServletResponse response) {
+			try {
+				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
+				String finishFile = record.getFinishzipFile(); 
+				if(finishFile !=null && !"".equals(finishFile)) return "yes" ; else return "no";  
+			} catch (Exception e) {
+				e.printStackTrace(); 
+				return "出错了..";
+			} 
+			 
 		}
 		 
 //		/**
