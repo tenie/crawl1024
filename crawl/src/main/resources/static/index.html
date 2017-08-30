@@ -236,8 +236,18 @@ window.onbeforeunload= function(){
 	}
  
 	$('#myTab a').click(function (e) { 
+	  if(v.run){
+		  if(confirm("有任务在允许,切换会中断,确定中断?")){
+			  stop() ; 
+		  }else{
+			  return;
+		  } 
+	  } 
 	  e.preventDefault() 
 	  $(this).tab('show')
+	  
+	  
+	 
 	})	
 	
 	$("#setProxybtn").click(function(){

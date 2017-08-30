@@ -47,9 +47,11 @@ public class MainServiceImpl implements MainService{
 			Collections.addAll(set, t);
 			set.remove("");  
 			return new ArrayList(set);
+	
 		}
 		
 		public static void main(String[] args) throws  Exception {
+			
 //			String[]  arr = {"","aa","","bb"};
 //			String[]  arr2 =   (String[]) trimArray(arr).toArray();
 //			System.out.println(Arrays.toString(arr2));;
@@ -79,14 +81,12 @@ public class MainServiceImpl implements MainService{
 		 * @throws Exception
 		 */
 		private String asyncDownloadActionZip(String[] urlArry ,String fileName) throws Exception{
-			System.out.println("begin....."+ System.getProperty("http.proxyHost")+":"+System.getProperty("http.proxyPort")); 
-			
-			System.out.println(Arrays.toString(urlArry));   
+			logger.info("begin....."+ System.getProperty("http.proxyHost")+":"+System.getProperty("http.proxyPort")); 
+			logger.info(Arrays.toString(urlArry));   
 			int arrSize = urlArry.length;
 			//图片下载
 			ArrayBlockingQueue<Map<String,Object>>  queue =  new ArrayBlockingQueue<Map<String,Object>>(arrSize);
-			for(String url : urlArry) {
-				System.out.println("carwling= "+url);
+			for(String url : urlArry) { 
 				Map<String, Object> rsMap; 
 			    tool.asyncGetBodyByte(url,queue);  
 		   } 
@@ -95,15 +95,13 @@ public class MainServiceImpl implements MainService{
 		   File zipFile = new File(finishZIPfile); 
 		   ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
 		   try { 
-			   for(int i=0; i<arrSize; i++) { 
-				   System.out.println("队列中获取"+i);
-				   System.out.println(queue.size());
+			   for(int i=0; i<arrSize; i++) {  
 				// 将队列中的图片byte 输出到zip中 
 				    Map<String, Object> rsMap =  queue.take();
 				    byte[]	 imgB = (byte[]) rsMap.get("val");
 				    String type = (String) rsMap.get("type");  
 				    zip(zipOut, "image"+new Date().getTime()+"."+tool.typeChange(type),imgB); 
-				    System.out.println("结束队列中获取"+i);
+				    logger.info("结束队列中获取"+i);
 			   }  
 		   } finally {
 			   if( zipOut !=null)
@@ -161,16 +159,14 @@ public class MainServiceImpl implements MainService{
 					}finally {
 						record.setCrawling(false);
 						record.setDownloading(false);
-						System.out.println("singleAnalyzeUrl === "+record.toString()); 
+						logger.info("singleAnalyzeUrl === "+record.toString()); 
 					} 
 			    }
 			});
-			if(! record.isCrawling()) {
-				 System.out.println("tets==="+ record.isCrawling()); 
+			if(! record.isCrawling()) { 
 				 record.setCrawling(true); 
 				 record.setThread(thread);
-				 thread.start();
-				 System.out.println("tets2==="+ record.isCrawling());
+				 thread.start(); 
 			}
 			return rs; 
 	       
@@ -281,7 +277,7 @@ public class MainServiceImpl implements MainService{
 			File file = new File(finishzipFile);   
 	        //判断文件是否存在如果不存在就返回默认图标  
 	        if(file.exists() && file.isFile() && file.canRead()) { 
-	        	System.out.println("/downloadZip.......");
+	        	logger.info("/downloadZip.......");
 		        FileInputStream inputStream = new FileInputStream(file);  
 		        byte[] data = new byte[(int)file.length()];  
 		        int length = inputStream.read(data);  
@@ -300,7 +296,7 @@ public class MainServiceImpl implements MainService{
 		        stream.close(); 
 		        record.setFinishzipFile(""); 
 		        DeleteFile.deleteAllFilesOfDir(file);
-		        System.out.println("finishzipFile=="+finishzipFile);
+		        logger.info("finishzipFile=="+finishzipFile);
 		    } 
 			
 		}
