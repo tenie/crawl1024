@@ -1,6 +1,7 @@
 package net.tenie.crawl.controller;
    
  
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +40,14 @@ public class MainController {
 		 * @return
 		 */
 		@RequestMapping("/")
-		public String index(){ 
+		public String index(HttpServletRequest request, HttpServletResponse response){ 
+			Enumeration<String> e = request.getHeaderNames();
+			while(e.hasMoreElements()) {
+				String name = e.nextElement();
+				System.out.println(name);
+				System.out.println(request.getHeader(name));;
+			}
+			
 			return "forward:/index.html";
 		}
 		
