@@ -13,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.util.ClassUtils;
 public class JsoupTool {
 	
 	public static void main(String[] args) throws Exception {
@@ -26,13 +27,14 @@ public class JsoupTool {
 //		for(Element i :e){
 //		System.out.println(i.attr("src"));
 //		}
-		System.setProperty("http.proxySet", "true");
-	    System.setProperty("http.proxyHost", "127.0.0.1");
-	    System.setProperty("http.proxyPort", "1080");
-		Set rs= JsoupTool.getUrlsSet("http://t66y.com/htm_mob/8/1705/2418715.html", "input","src");
+//		System.setProperty("http.proxySet", "true");
+//	    System.setProperty("http.proxyHost", "127.0.0.1");
+//	    System.setProperty("http.proxyPort", "6766");
+		Set rs= JsoupTool.getUrlsSet("http://t66y.com/htm_mob/7/1709/2628582.html", "input","src");
 //		List rs=JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
 		//List rs=JsoupTool.getUrls("/Users/tenie/Desktop/1024.html", "input[type='image']");
 		System.out.println(rs);
+		System.out.println(rs.size());
 		}
 	
 	/**
@@ -46,8 +48,16 @@ public class JsoupTool {
 		Document doc ;
 		boolean ishttp = false; 
 		if("http".equals(path.substring(0, 4))){ 
-			doc = Jsoup.connect(path).get();
+			//doc = Jsoup.connect(path).get();
 			ishttp=true;
+			 
+			  String itemPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+			  itemPath =itemPath.substring(1)+"static/";  
+			  String cmd = itemPath+"phantomjs.exe "+itemPath+"foo.js";
+			  System.out.println(cmd);
+			  String rs = JSUtil.execCommand(cmd);
+		      System.out.println(rs); 
+		      doc= Jsoup.parse(rs);
 		}else{
 			doc =Jsoup.parse(new File(path), "utf-8");
 		}
@@ -78,8 +88,16 @@ public class JsoupTool {
 		Document doc ;
 		boolean ishttp = false; 
 		if("http".equals(path.substring(0, 4))){ 
-			doc = Jsoup.connect(path).get();
+			//doc = Jsoup.connect(path).get();
 			ishttp=true;
+			 
+			  String itemPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+			  itemPath =itemPath.substring(1)+"static/";  
+			  String cmd = itemPath+"phantomjs.exe "+itemPath+"foo.js";
+			  System.out.println(cmd);
+			  String rs = JSUtil.execCommand(cmd);
+		      System.out.println(rs); 
+		      doc= Jsoup.parse(rs);
 		}else{
 			doc =Jsoup.parse(new File(path), "utf-8");
 		}

@@ -54,7 +54,18 @@ public class OKHttpTool {
 	 */
 	public String getBodyString(String url) throws IOException {
 	  Request request = new Request.Builder()
-	      .url(url)
+	      .url(url)//Referrer Policy
+	      .addHeader("X-Requested-With", "XMLHttpRequest")
+	      .addHeader("Connection", "keep-alive")
+	      .addHeader("Pragma", "no-cache")
+	      .addHeader("Cache-Control", "no-cache")
+	      .addHeader("Upgrade-Insecure-Requests", "1")
+	      .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.109 Safari/537.36")
+	      .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+	      .addHeader("DNT", "1") 
+	      .addHeader("Accept-Encoding", "gzip, deflate, br") 
+	      .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6")
+	      .addHeader("Cookie","__cfduid=d7a892a2152d2de4f227926471714e0651504060800")
 	      .build(); 
 	  Response response = client.newCall(request).execute(); 
 	  if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
@@ -197,35 +208,40 @@ public class OKHttpTool {
 	  }
 
 	  public static void main(String[] args) throws Exception {
-		
+//		  System.setProperty("http.proxySet", "true");
+//		    System.setProperty("http.proxyHost", "127.0.0.1");
+//		    System.setProperty("http.proxyPort", "6766");
 	 	OKHttpTool ok=new OKHttpTool();
+	 	String rs = ok.getBodyString("https://t66y.com/htm_mob/7/1709/2628582.html");
+//	 	String rs = ok.getBodyString("http://localhost:8080");
+	 	System.out.println(rs);
 		  //System.out.println(ok.run("http://tenie.net"));
 		// ok.run();
-	 	Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				int i = 0;
-				while(i < 21) {
-					
-					try {
-						Thread.sleep(1000);
-						System.out.println(i++);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
-			}
-	 		 
-	 	 });
-	 	thread.start();
-	 	System.out.println("begin..");
-	 	byte[] b = ok.getBodyBytes("http://cdn1.metarthunter.com/content/140303/zlatka-a-bunnu-15.jpg");
-	 	 
-	 	//			
-		 System.out.println(b.length);
+//	 	Thread thread = new Thread(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				int i = 0;
+//				while(i < 21) {
+//					
+//					try {
+//						Thread.sleep(1000);
+//						System.out.println(i++);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//				
+//			}
+//	 		 
+//	 	 });
+//	 	thread.start();
+//	 	System.out.println("begin..");
+//	 	byte[] b = ok.getBodyBytes("http://cdn1.metarthunter.com/content/140303/zlatka-a-bunnu-15.jpg");
+//	 	 
+//	 	//			
+//		 System.out.println(b.length);
 //		  Map<String, Object> rsMap =   new OKHttpTool().getBodyBytesAndType("https://www.tenie.net/lib/assets/img/codeMonkey.ico");
 //		 System.out.println(rsMap.get("type")); 
 		} 

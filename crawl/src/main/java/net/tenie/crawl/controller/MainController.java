@@ -33,8 +33,7 @@ public class MainController {
 //	@Value("${image.save.path}")
 //	private String fileSavePath;
 //	private String fileSavePath = System.getProperty("user.home");
-	Logger logger = LoggerFactory.getLogger(MainController.class); 
-//	 String fileName = request.getSession().getServletContext().getRealPath("/");
+	Logger logger = LoggerFactory.getLogger(MainController.class);  
 		/**
 		 * 首页的配置
 		 * @return
@@ -50,13 +49,7 @@ public class MainController {
 			
 			return "forward:/index.html";
 		}
-		
-//		http://localhost:8080/downloadZip
-//		@RequestMapping("/downloadZip")
-//		public String indexdownloadZip(){ 
-//			return "forward:/index.html";
-//		}  
-		
+		 
 		/**
 		 * 解析单个页面中要获取的url字符串, url字符串返回给前端, 并在新的线程中下载这些url对于的图片,
 		 * 1. 判断是否有认为在执行, 有任务执行中就退出
