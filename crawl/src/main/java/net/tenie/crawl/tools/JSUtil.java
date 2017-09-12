@@ -10,13 +10,15 @@ import org.xml.sax.SAXException;
 public class JSUtil { 
 		      
 		    
-public static void main(String[] args) throws IOException, SAXException {  
+public static void main(String[] args) throws IOException, SAXException {
+	 
 	  String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-	  path = path.substring(1)+"static/";  
-	  String cmd = path+"phantomjs.exe "+path+"foo.js";
-	  System.out.println(cmd);
-	  String s = execCommand(cmd);
-      System.out.println(s); 
+	  System.out.println(path);
+//	  path = path.substring(1)+"static/";  
+//	  String cmd = path+"phantomjs.exe "+path+"foo.js";
+//	  System.out.println(cmd);
+//	  String s = execCommand(cmd);
+//      System.out.println(s); 
 }  
 
 	 // 调用phantomjs程序，并传入js文件，并通过流拿回需要的数据。  

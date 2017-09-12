@@ -2,9 +2,12 @@ package net.tenie.crawl.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.stream.FileImageOutputStream;
@@ -21,9 +24,7 @@ import okhttp3.Response;
 public class OKHttpTool {
 	   
 	   private static String host ;
-	   private static String port ;
-//	    static String url = "http://1212.ip138.com/ic.asp";
-//	    static String url = "http://t66y.com";
+	   private static String port ; 
 	    private static OkHttpClient client =   new OkHttpClient.Builder()
 	    		.connectTimeout(20, TimeUnit.SECONDS)  
 	            .readTimeout(20, TimeUnit.SECONDS)  
@@ -32,12 +33,7 @@ public class OKHttpTool {
 	    public OKHttpTool(){
 	       
     
-	    }
-//	 static{
-//    	 System.setProperty("http.proxySet", "true");
-//         System.setProperty("http.proxyHost", host);
-//         System.setProperty("http.proxyPort", port + "");
-//    }
+	    } 
 	//1
 	public static void setProxy(String host,String port){
 	   System.setProperty("http.proxySet", "true");
@@ -55,17 +51,17 @@ public class OKHttpTool {
 	public String getBodyString(String url) throws IOException {
 	  Request request = new Request.Builder()
 	      .url(url)//Referrer Policy
-	      .addHeader("X-Requested-With", "XMLHttpRequest")
-	      .addHeader("Connection", "keep-alive")
-	      .addHeader("Pragma", "no-cache")
-	      .addHeader("Cache-Control", "no-cache")
-	      .addHeader("Upgrade-Insecure-Requests", "1")
-	      .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.109 Safari/537.36")
-	      .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-	      .addHeader("DNT", "1") 
-	      .addHeader("Accept-Encoding", "gzip, deflate, br") 
-	      .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6")
-	      .addHeader("Cookie","__cfduid=d7a892a2152d2de4f227926471714e0651504060800")
+//	      .addHeader("X-Requested-With", "XMLHttpRequest")
+//	      .addHeader("Connection", "keep-alive")
+//	      .addHeader("Pragma", "no-cache")
+//	      .addHeader("Cache-Control", "no-cache")
+//	      .addHeader("Upgrade-Insecure-Requests", "1")
+//	      .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.109 Safari/537.36")
+//	      .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+//	      .addHeader("DNT", "1") 
+//	      .addHeader("Accept-Encoding", "gzip, deflate, br") 
+//	      .addHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6")
+//	      .addHeader("Cookie","__cfduid=d7a892a2152d2de4f227926471714e0651504060800")
 	      .build(); 
 	  Response response = client.newCall(request).execute(); 
 	  if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
@@ -92,9 +88,7 @@ public class OKHttpTool {
 	    Headers responseHeaders = response.headers(); 
 	    String type = responseHeaders.get("Content-Type").split("/")[1];
 	    byte[] by =response.body().bytes();
-	    return by;
-//	    System.out.println(by.length);
-//	    byte2image(by, "/Users/tenie/Desktop/foo."+type);
+	    return by; 
 	}
 	
 	/**
@@ -120,7 +114,7 @@ public class OKHttpTool {
 	    rs.put("type", type);
 	    return rs; 
 	}
-	//3
+	 
 	    /**
 	     * 异步 获取body中的byte[] 
 	     */
@@ -154,6 +148,7 @@ public class OKHttpTool {
 //	           	      System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
 //	           	    }
 	           	    String type = responseHeaders.get("Content-Type");
+//	           	    System.out.println(response.body().string());
 	           	    byte[] by =response.body().bytes();
 	           	    Map<String,Object> rs = new HashMap<String,Object>();
 	           	    rs.put("val", by);
@@ -208,13 +203,18 @@ public class OKHttpTool {
 	  }
 
 	  public static void main(String[] args) throws Exception {
-//		  System.setProperty("http.proxySet", "true");
-//		    System.setProperty("http.proxyHost", "127.0.0.1");
-//		    System.setProperty("http.proxyPort", "6766");
+		System.setProperty("http.proxySet", "true");
+		System.setProperty("http.proxyHost", "127.0.0.1");
+		System.setProperty("http.proxyPort", "6766");
 	 	OKHttpTool ok=new OKHttpTool();
-	 	String rs = ok.getBodyString("https://t66y.com/htm_mob/7/1709/2628582.html");
-//	 	String rs = ok.getBodyString("http://localhost:8080");
-	 	System.out.println(rs);
+	 	//http://cdn1.metarthunter.com/content/150701/fantastic-brunette-hottie-yarina-a-reveals-her-amazing-body-05.jpg
+//	 	String rs = ok.getBodyString("http://t66y.com/htm_mob/7/1709/2628582.html");
+	 	Set<Map<String,Object>> m = new HashSet<Map<String,Object>>();
+	 	ok.asyncGetBodyByte("https://www.tenie.net/lib/img/JGT_meitu_3.jpg",m);
+	 	
+	 	
+	 	//	 	String rs = ok.getBodyString("http://localhost:8080");
+	 	System.out.println(m.size());
 		  //System.out.println(ok.run("http://tenie.net"));
 		// ok.run();
 //	 	Thread thread = new Thread(new Runnable() {

@@ -4,28 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
- 
-import net.tenie.crawl.entity.BinData;
 import net.tenie.crawl.entity.ControllerRecord;
 import net.tenie.crawl.tools.DeleteFile;
 import net.tenie.crawl.tools.JsoupTool;
 import net.tenie.crawl.tools.OKHttpTool;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -41,36 +33,13 @@ public class MainServiceImpl implements MainService{
 	
 		@Autowired
 		private OKHttpTool tool ;
+		
+		@Autowired
+		private JsoupTool jsoupTool ;
 		 
-		private static <T>  List<T> trimArray(T[] t){ 
-			Set<T> set = new HashSet<T>(); 
-			Collections.addAll(set, t);
-			set.remove("");  
-			return new ArrayList(set);
-	
-		}
+	 
 		
-		public static void main(String[] args) throws  Exception {
-			
-//			String[]  arr = {"","aa","","bb"};
-//			String[]  arr2 =   (String[]) trimArray(arr).toArray();
-//			System.out.println(Arrays.toString(arr2));;
-			
-			SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-//			simpledateformat.applyPattern("yyyy-MM-dd_HH:mm:ss");
-			System.out.println(simpledateformat.format(new Date()));
-			
-			//C:/Users/ten/Downloads/image2017-08-28_16-31-39.zip
-			  File zipFile = new File("C:/Users/ten/Downloads/image2017-08-28_16-31-39.zip");  
-			   ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
-			   byte[]	 imgB  = {1,2,3,4};
-			   for(int i = 0 ;i<5;i++) {
-				   zip(zipOut, "test.test"+i,imgB); 
-			   }
-			   
-			   zipOut.close();
-		}
-		
+	 
 		/**
 		 * 异步下载, 输出.zip文件到指定目录
 		 * 1. 根据url 下载图片到同步队列(集合)中,(异步操作,是一个下载队列,完成下载会把结果放入集合中)
@@ -80,33 +49,43 @@ public class MainServiceImpl implements MainService{
 		 * @param fileName 压缩文件全路径
 		 * @throws Exception
 		 */
-		private String asyncDownloadActionZip(String[] urlArry ,String fileName) throws Exception{
+		private String asyncDownloadActionZip(String[] urlArry ,String fileName,ControllerRecord record) throws Exception{
 			logger.info("begin....."+ System.getProperty("http.proxyHost")+":"+System.getProperty("http.proxyPort")); 
 			logger.info(Arrays.toString(urlArry));   
 			int arrSize = urlArry.length;
 			//图片下载
 			ArrayBlockingQueue<Map<String,Object>>  queue =  new ArrayBlockingQueue<Map<String,Object>>(arrSize);
 			for(String url : urlArry) { 
-				Map<String, Object> rsMap; 
+//				Map<String, Object> rsMap; 
 			    tool.asyncGetBodyByte(url,queue);  
 		   } 
 		   //图片保存到硬盘 
 		   String finishZIPfile = fileName+"/image_"+new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date())+".zip";  
 		   File zipFile = new File(finishZIPfile); 
 		   ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
+		   int append = 0; //记录是否给zip包添加的元素个数
+		   String timeStr =  new Date().getTime()+"";
 		   try { 
 			   for(int i=0; i<arrSize; i++) {  
 				// 将队列中的图片byte 输出到zip中 
 				    Map<String, Object> rsMap =  queue.take();
 				    byte[]	 imgB = (byte[]) rsMap.get("val");
-				    String type = (String) rsMap.get("type");  
-				    zip(zipOut, "image"+new Date().getTime()+"."+tool.typeChange(type),imgB); 
-				    logger.info("结束队列中获取"+i);
+				    String type = (String) rsMap.get("type");
+				    if(imgB.length> 10){
+				    	System.out.println("append:"+append+":"+"image"+timeStr+append+"."+tool.typeChange(type));
+					    zip(zipOut, "image"+timeStr+append+"."+tool.typeChange(type),imgB); 
+					    append++;
+				    } 
+				    logger.info("结束:队列中获取"+i);
+				    //Thread.sleep(100);
 			   }  
 		   } finally {
 			   if( zipOut !=null)
 			   zipOut.close(); 
 		   } 
+		    
+		   record.setAppendItem(append);
+		  
 		   return finishZIPfile; 
 		}
 		
@@ -122,52 +101,60 @@ public class MainServiceImpl implements MainService{
 		@Override
 		public Set<String>  singleAnalyzeUrl(ControllerRecord record,  Map<String, String> queryParam) throws Exception {
 			Set<String> rs = new HashSet<String>();
-			if(record.isCrawling()){
-				rs.add("有任务在执行中, 请稍后..."); 
-				return rs;
-			} 
-			String url1 = queryParam.get("url1");
-			String select = queryParam.get("select");
-			String attr = queryParam.get("attr");
-			 
-	    	//解析html
-	        rs= JsoupTool.getUrlsSet(url1, select,attr);
-	        Set<String>  cache=  record.getCache();
-	        if(cache !=null)cache.clear();
- 	        cache=rs;
-	        record.setCache(rs);
-	        
-	        //下载图片
-	         String fileName=record.getFileSavePath();
-			 String[] urlArry ;
-			 if(cache!=null && !cache.isEmpty()){
-				 urlArry = new String[cache.size()];
-				 cache.toArray(urlArry);  
-			 }else{
-				 throw new RuntimeException("没人东西可爬取");
-			 }  
-			 //线程下载图片
-			 Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try { 
-//						Thread.sleep(25000);
-						record.setCrawling(true);
-						record.setDownloading(true);
-						record.setFinishzipFile( asyncDownloadActionZip(urlArry,fileName)); 
-					} catch (Exception e) { 
-						e.printStackTrace();	
-					}finally {
-						record.setCrawling(false);
-						record.setDownloading(false);
-						logger.info("singleAnalyzeUrl === "+record.toString()); 
-					} 
-			    }
-			});
-			if(! record.isCrawling()) { 
-				 record.setCrawling(true); 
-				 record.setThread(thread);
-				 thread.start(); 
+			try {
+				if(record.isCrawling()){
+					rs.add("有任务在执行中, 请稍后..."); 
+					return rs;
+				} 
+				String url1 = queryParam.get("url1");
+				String select = queryParam.get("select");
+				String attr = queryParam.get("attr");
+				String isDynamic = queryParam.get("isDynamic");
+				if(isDynamic==null || "".equals(isDynamic)){
+					isDynamic="false";
+				}
+		    	//解析html
+		        rs= jsoupTool.getUrlsSet(url1, select,attr,isDynamic);
+		        Set<String>  cache=  record.getCache();
+		        if(cache !=null)cache.clear();
+	 	        cache=rs;
+		        record.setCache(rs);
+		        
+		        //下载图片
+		         String fileName=record.getFileSavePath();
+				 String[] urlArry ;
+				 if(cache!=null && !cache.isEmpty()){
+					 urlArry = new String[cache.size()];
+					 cache.toArray(urlArry);  
+				 }else{
+					 throw new RuntimeException("没人东西可爬取");
+				 }  
+				 //线程下载图片
+				 Thread thread = new Thread(new Runnable() {
+					public void run() {
+						try { 
+//							Thread.sleep(25000);
+							record.setCrawling(true);
+							record.setDownloading(true);
+							record.setFinishzipFile( asyncDownloadActionZip(urlArry,fileName,record)); 
+						} catch (Exception e) { 
+							e.printStackTrace();	
+						}finally {
+							record.setCrawling(false);
+							record.setDownloading(false);
+							logger.info("singleAnalyzeUrl === "+record.toString()); 
+						} 
+				    }
+				});
+				if(! record.isCrawling()) { 
+					 record.setCrawling(true); 
+					 record.setThread(thread);
+					 thread.start(); 
+				}
+			} catch (Exception e) {
+				record.clear();
 			}
+		
 			return rs; 
 	       
 		}
@@ -177,50 +164,59 @@ public class MainServiceImpl implements MainService{
 		@Override
 		public Set<String> multiAnalyzeUrl(ControllerRecord record, Map<String, String> queryParam) throws Exception {
 			Set<String> rs = new HashSet<String>();
-			if(record.isCrawling()){
-				rs.add("有任务在执行中, 请稍后...");
-				return rs;
-			} 
-			String url1 = queryParam.get("url1");
-			String select = queryParam.get("select");
-			String attr = queryParam.get("attr");
-			 
-	        logger.info(url1 + " ; " + select);
-	         
-	    	String[] strArr = url1.split("\n");
-	    	for(String str : strArr){
-	    		rs.addAll(JsoupTool.getUrlsSet(str, select,attr));
-	    	} 
-	    	Set<String> cache =record.getCache();
-	    	if(cache !=null)cache.clear();
-	        cache=rs;
-	        record.setCache(rs);
-	        //下载图片
-	         String fileName=record.getFileSavePath();
-			 String[] urlArry ;
-			 if(cache!=null && !cache.isEmpty()){
-				 urlArry = new String[cache.size()];
-				 cache.toArray(urlArry);  
-			 }else{
-				 throw new RuntimeException("没人东西可爬取");
-			 }  
-			 Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try { 
-						record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName)); 
-					} catch (Exception e) { 
-						e.printStackTrace();	
-					}finally { 
-						record.setCrawling(false);
-						
-					} 
-			    }
-			});
-			if(! record.isCrawling()) {
-				 record.setCrawling(true);
-				 record.setThread(thread);
-				 thread.start(); 
-			} 
+			try {
+				
+				if(record.isCrawling()){
+					rs.add("有任务在执行中, 请稍后...");
+					return rs;
+				} 
+				String url1 = queryParam.get("url1");
+				String select = queryParam.get("select");
+				String attr = queryParam.get("attr");
+				String isDynamic = queryParam.get("isDynamic");
+				if(isDynamic==null || "".equals(isDynamic)){
+					isDynamic="false";
+				} 
+		        logger.info(url1 + " ; " + select);
+		         
+		    	String[] strArr = url1.split("\n");
+		    	for(String str : strArr){
+		    		rs.addAll(jsoupTool.getUrlsSet(str, select,attr,isDynamic));
+		    	} 
+		    	Set<String> cache =record.getCache();
+		    	if(cache !=null)cache.clear();
+		        cache=rs;
+		        record.setCache(rs);
+		        //下载图片
+		         String fileName=record.getFileSavePath();
+				 String[] urlArry ;
+				 if(cache!=null && !cache.isEmpty()){
+					 urlArry = new String[cache.size()];
+					 cache.toArray(urlArry);  
+				 }else{
+					 throw new RuntimeException("没有东西可爬取");
+				 }  
+				 Thread thread = new Thread(new Runnable() {
+					public void run() {
+						try { 
+							record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName,record)); 
+						} catch (Exception e) { 
+							e.printStackTrace();	
+						}finally { 
+							record.setCrawling(false);
+							
+						} 
+				    }
+				});
+				if(! record.isCrawling()) {
+					 record.setCrawling(true);
+					 record.setThread(thread);
+					 thread.start(); 
+				} 	
+			} catch (Exception e) {
+				record.clear(); 
+			}
+			
 			return rs;
 		}
 		@Override
@@ -250,7 +246,7 @@ public class MainServiceImpl implements MainService{
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try { 
-					record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName)); 
+					record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName,record)); 
 				} catch (Exception e) { 
 					e.printStackTrace();	
 				}finally {
@@ -318,7 +314,7 @@ public class MainServiceImpl implements MainService{
 				public void run() {
 					try {
 						
-						record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName)); 
+						record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName,record));  
 					} catch (Exception e) { 
 						e.printStackTrace();	
 					}finally {
@@ -348,12 +344,12 @@ public class MainServiceImpl implements MainService{
 				 urlArry = new String[cache.size()];
 				 cache.toArray(urlArry);  
 			 }else{
-				 return "没人东西可爬取";
+				 return "没有东西可爬取";
 			 }  
 			 Thread thread = new Thread(new Runnable() {
 				public void run() {
 				try { 
-					record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName));
+					record.setFinishzipFile(asyncDownloadActionZip(urlArry,fileName,record));
 				} catch (Exception e) { 
 					e.printStackTrace();	
 				}finally {

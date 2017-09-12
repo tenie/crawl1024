@@ -63,6 +63,10 @@
 							<span v-bind:class="{'hidden':  run }" >
 								<button  style="background-color: #D4D4D4;border: 0px;height: 15px;width: 15px;"></button> 				
 							</span>
+							<p>
+								动态页面:<input type="checkbox" id="isDynamic">
+								<!-- <button onclick="test()">test</button> -->
+							</p>
 						</div>
 						
 						<p></p>
@@ -84,10 +88,10 @@
 					  			单个页面url:<input name="url1" style="width: 506px;" >
 					  		</p>  
 					  		<span> 
-					  			元素选择器表达式:<input name="select"  >
+					  			元素选择器表达式:<input name="select" value="img"  >
 					  	    </span>  
 					  		<span>
-					  			元素属性:<input name="attr">
+					  			元素属性:<input name="attr" value="src">
 					  		</span> 
 					  		</form> 
 					  		<br>
@@ -123,10 +127,10 @@
 						  		多页面url:<textarea name="url1"  rows="3" cols="80" ></textarea><br>
 						  		<div>
 						  			<span>
-						  			元素选择器:<input name="select"  >
+						  			元素选择器:<input name="select"  value="img">
 							  		</span> 
 							  		<span>
-							  			元素属性:<input name="attr">
+							  			元素属性:<input name="attr" value="src">
 							  		</span>   
 						  		</div>  
 					  		</form>
@@ -181,6 +185,14 @@ window.onbeforeunload= function(){
 				return "重新加载?";
 			} 
 		}) */
+		
+	/* function test(){
+	 alert($("#form2").serialize()
+			 +"&isDynamic="+(($("#isDynamic[type=checkbox]:checked").length==1)?"true":"false")
+			);
+	 console.log($("#form2").serialize())
+ } */
+		
 	var btn  ;
 	var done ;	
 	function stop(){ 
@@ -205,6 +217,7 @@ window.onbeforeunload= function(){
 		  done = setInterval(function(){
 			if(v.run){
 				$.get("/hasFileCanDownload",function(data){
+					 
 					if(data == "yes"){
 						$.get("/downloadFinish",function(rs){
 							//alert("done"+index++);
@@ -219,10 +232,25 @@ window.onbeforeunload= function(){
 							} 
 						})
 					}else{
-						btn.removeAttr("disabled");
+						/* btn.removeAttr("disabled");
 						btn.text("提交");
 						v.run=false; 
-						alert("任务已经被中断...")
+						alert("任务已经被中断...") */
+						$.get("/isRuning",function(data){
+				    		if(data=="yes"){  
+				    			
+				    		}else{
+				    			btn.text("提交");
+				    			v.run = false;	
+				    			setTimeout(function(){
+				    				alert("任务已经被中断...")
+				    			},100)
+				    		}
+				    		
+				    	})
+						
+						
+						
 					}
 				})  
 			}
@@ -232,7 +260,7 @@ window.onbeforeunload= function(){
  
 	$('#myTab a').click(function (e) { 
 	  if(v.run){
-		  if(confirm("有任务在允许,切换会中断,确定中断?")){
+		  if(confirm("有任务在运行,切换会中断,确定中断?")){
 			  stop() ; 
 		  }else{
 			  return;
@@ -259,14 +287,16 @@ window.onbeforeunload= function(){
 		btn.attr("disabled",true);
 		btn.text("下载中...")
 		
-		$.post("/url",$("#form1").serialize(),function(data){
-			var html ="";
-			$.each(data,function(i,val){
-				 html+=val+"\n";
-			})
-			$("#viewURL").val(html);
-			
-			downloadZipFile();  
+		$.post("/url"
+				,$("#form1").serialize() 
+				 +"&isDynamic="+(($("#isDynamic[type=checkbox]:checked").length==1)?"true":"false") 
+			   ,function(data){
+		  var html ="";
+		  $.each(data,function(i,val){
+			 html+=val+"\n";
+		  })
+		  $("#viewURL").val(html); 
+		  downloadZipFile();  
 		})
 		return false;
 	})
@@ -279,7 +309,7 @@ window.onbeforeunload= function(){
 		var btntext = btn.text();
 		btn.attr("disabled",true);
 		btn.text("下载中...")
-		$.post("/urls",$("#form2").serialize(),function(data){
+		$.post("/urls",$("#form2").serialize() +"&isDynamic="+(($("#isDynamic[type=checkbox]:checked").length==1)?"true":"false"),function(data){
 			  
 			var html ="";
 			$.each(data,function(i,val){

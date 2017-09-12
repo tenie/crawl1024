@@ -15,6 +15,7 @@ public class ControllerRecord {
 	volatile private boolean  isCrawling = false;  
 	volatile private boolean isDownloading = false; 
 	volatile private Set<String> cache ;
+	volatile private int appendItem = 0;
 	private String fileSavePath = System.getProperty("user.home").replace("\\", "/");  
 	volatile private String finishzipFile = "";
 	private static ArrayBlockingQueue queue;
@@ -32,6 +33,7 @@ public class ControllerRecord {
 		    	DeleteFile.deleteAllFilesOfDir(file);
 			} 
 		}
+		appendItem = 0;
 		finishzipFile = "";
 		String fileSavePath = System.getProperty("user.home").replace("\\", "/");  
 		cache=null;
@@ -41,6 +43,18 @@ public class ControllerRecord {
 	
 	
 	
+	public int getAppendItem() {
+		return appendItem;
+	}
+
+
+
+	public void setAppendItem(int appendItem) {
+		this.appendItem = appendItem;
+	}
+
+
+
 	public Thread getThread() {
 		return thread;
 	}

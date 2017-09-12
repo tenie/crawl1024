@@ -1,6 +1,7 @@
 package net.tenie.crawl.controller;
    
  
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
@@ -68,6 +69,8 @@ public class MainController {
 			
 			ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 			System.out.println("/url === "+record.toString());
+			 
+			System.out.println(queryParam.toString());
 	        return service.singleAnalyzeUrl(record,queryParam);
 		}
 		
@@ -144,15 +147,19 @@ public class MainController {
 		 * @param response
 		 * @throws Exception
 		 */
+		//TODO
 		@RequestMapping(value="/downloadZip",method=RequestMethod.GET) 
 		public void downloadFinishZip(HttpServletRequest request, HttpServletResponse response) throws Exception{
 			try {
 				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
-				service.downloadFinishZip(record,response);  
+				if(record.getAppendItem() == 0 ){ 
+				}else{
+					service.downloadFinishZip(record,response);  
+				} 
+				
 			} catch (Exception e) {
 			    e.printStackTrace();
-			}
-			
+			}  
 		}
 		
 		/**
@@ -215,138 +222,7 @@ public class MainController {
 			} 
 			 
 		}
-		 
-//		/**
-//		 * 同步下载,  保存到指定路径
-//		 * @param urlArry
-//		 * @param fileName
-//		 * @throws Exception
-//		 */
-//		private void downloadAction(String[] urlArry ,String fileName) throws Exception{
-//			System.out.println("begin.....");
-////			 OKHttpTool tool = 	new OKHttpTool(); 
-//			//String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
-//			for(String url : urlArry) {
-//				System.out.println("carwling= "+url);
-//				Map<String, Object> rsMap; 
-//					rsMap = tool.getBodyBytesAndType(url); 
-//				byte[]	 imgB = (byte[]) rsMap.get("val");
-//				String type = (String) rsMap.get("type"); 
-//			    tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
-//		   }
-//		
-//		}
-//		/**
-//		 * 异步下载
-//		 * @param urlArry
-//		 * @param fileName
-//		 * @throws Exception
-//		 */
-//		private void asyncDownloadAction(String[] urlArry ,String fileName) throws Exception{
-//			System.out.println("begin.....");
-////			 OKHttpTool tool = 	new OKHttpTool(); 
-//			//String[] urlArry =  queryParam.get("imgUrls").split("\n"); 
-//			//去除数组中的空字符串
-//			Set<String> s = new HashSet<>();
-//			Collections.addAll(s, urlArry);
-//			s.remove("");
-//			String[]  arr2 = new String[s.size()];
-//			s.toArray(arr2);
-//			BinData.setQueue(arr2.length);
-//			ArrayBlockingQueue<Map<String,Object>>  queue = 	BinData.getQueue();
-//			for(String url : arr2) {
-//				System.out.println("carwling= "+url);
-//				Map<String, Object> rsMap; 
-//			    tool.asyncGetBodyByte(url,queue); 
-//			  //  BinData.setIndex(BinData.getIndex()+1);
-//		   }
-//		   
-//		   boolean tf =true;
-//		   while(tf){
-//			   
-//			   if(queue.size()==urlArry.length){
-//				   Iterator<Map<String,Object>>   it = queue.iterator();
-//				   while(it.hasNext()){
-//					   System.out.println("download image...");
-//					   Map<String, Object> rsMap =  it.next();
-//					   byte[]	 imgB = (byte[]) rsMap.get("val");
-//					   String type = (String) rsMap.get("type"); 
-//					   Thread.sleep(100);
-//					   tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
-//				    }
-//				   break;
-//				  }else{
-//					  System.out.println(queue.size());
-//					  Thread.sleep(3000);
-//				  }
-//				  
-//		   }
-//		   
-//		
-//		}
-//		
-//		
-//		/**
-//		 * 异步下载, 输入为zip
-//		 * 1. 根据url 下载图片到同步队列(集合)中,(异步操作,是一个下载队列,完成下载会把结果放入集合中)
-//		 * 2. 循环判断集合是否满(根据多少个url==集合多少个元素), 集合满了开始获取集合中的元素, 进行zip打包输出到临时目录
-//		 * 3. 把打包的临时zip文件全路径缓存起来,下载controller,根据这个缓存的路径名来下载
-//		 * @param urlArry
-//		 * @param fileName
-//		 * @throws Exception
-//		 */
-//		private String asyncDownloadActionZip(String[] urlArry ,String fileName) throws Exception{
-//			System.out.println("begin....."); 
-//			String finishZIPfile = fileName+"/image"+new Date().getTime()+".zip";
-//			BinData.setQueue(urlArry.length);
-//			ArrayBlockingQueue<Map<String,Object>>  queue = 	BinData.getQueue();
-//			for(String url : urlArry) {
-//				System.out.println("carwling= "+url);
-//				Map<String, Object> rsMap; 
-//			    tool.asyncGetBodyByte(url,queue);  
-//		   } 
-//		   boolean tf =true;
-//		   while(tf){
-//			   
-//			   if(queue.size()==urlArry.length){
-//				   Iterator<Map<String,Object>>   it = queue.iterator();
-//				   // 将队列中的图片byte 输出到zip中
-//				    File zipFile = new File(finishZIPfile);  
-//				    ZipOutputStream   zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
-//				   try {
-//					   while(it.hasNext()){
-//						   System.out.println("download image...");
-//						   Map<String, Object> rsMap =  it.next();
-//						   byte[]	 imgB = (byte[]) rsMap.get("val");
-//						   String type = (String) rsMap.get("type"); 
-//						   Thread.sleep(100);
-//						  // tool.byte2image(imgB,fileName+"/image"+new Date().getTime()+"."+tool.typeChange(type)); 
-//						   zip(zipOut, "image"+new Date().getTime()+"."+tool.typeChange(type),imgB);
-//						    
-//					    }
-//				   } finally {
-//					   zipOut.close();
-//				  }
-//				  
-//				  
-//				   break; //退出循环
-//				  }else{
-//					  System.out.println(queue.size());
-//					  Thread.sleep(500);
-//				  }
-//				  
-//		   }
-//		   return finishZIPfile;
-//		
-//		}
-//		
-//		private void zip(ZipOutputStream  zipOut,String fileName,byte[] b) throws Exception{ 
-//			zipOut.putNextEntry(new ZipEntry(fileName));
-//			zipOut.write(b);
-//			zipOut.flush();
-//		}
-//		
-	 
+ 
 		
 		 
 }

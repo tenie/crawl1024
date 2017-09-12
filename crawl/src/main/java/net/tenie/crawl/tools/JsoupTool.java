@@ -13,10 +13,49 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Env;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+@Component
 public class JsoupTool {
 	
+	@Value("${phantomjs.path}") 
+	private   String exePath;
+	
+	@Value("${script.path}")
+	private   String scriptPath;
+	
+	private static  String itemPath;
+	
+	
+	
+	public String getExePath() {
+		return exePath;
+	}
+	public void setExePath(String exePath) {
+		this.exePath = exePath;
+	}
+	public String getScriptPath() {
+		return scriptPath;
+	}
+	public void setScriptPath(String scriptPath) {
+		this.scriptPath = scriptPath;
+	}
+	public static String getItemPath() {
+		return itemPath;
+	}
+	public static void setItemPath(String itemPath) {
+		JsoupTool.itemPath = itemPath;
+	}
+
+	
+ 
+	
+	
 	public static void main(String[] args) throws Exception {
+		 
 		// Document doc = Jsoup.connect("http://t66y.com/htm_mob/8/1705/2420439.html").get();
 //		Document doc =Jsoup.parse(new File("/Users/tenie/Desktop/1024.html"), "utf-8");
 //		//String title = doc.title();
@@ -30,51 +69,39 @@ public class JsoupTool {
 //		System.setProperty("http.proxySet", "true");
 //	    System.setProperty("http.proxyHost", "127.0.0.1");
 //	    System.setProperty("http.proxyPort", "6766");
-		Set rs= JsoupTool.getUrlsSet("http://t66y.com/htm_mob/7/1709/2628582.html", "input","src");
+//		Set rs= JsoupTool.getUrlsSet("http://t66y.com/htm_mob/7/1709/2628582.html", "input","src","false");
 //		List rs=JsoupTool.getUrls("c:/Users/ten/Downloads/1024.html", "input[type='image']");
 		//List rs=JsoupTool.getUrls("/Users/tenie/Desktop/1024.html", "input[type='image']");
-		System.out.println(rs);
-		System.out.println(rs.size());
+//		System.out.println(rs);
+//		System.out.println(rs.size());
 		}
-	
-	/**
-	 * 提供url或文件路径, 和要获取最终url的选择器表达式(和jquery语法类似)  获取最终的url字符串列表, 
-	 * @param path
-	 * @param select
-	 * @return
-	 * @throws Exception
-	 */
-	public static List<String> getUrls(String path,String select) throws Exception{
-		Document doc ;
-		boolean ishttp = false; 
-		if("http".equals(path.substring(0, 4))){ 
-			//doc = Jsoup.connect(path).get();
-			ishttp=true;
-			 
-			  String itemPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-			  itemPath =itemPath.substring(1)+"static/";  
-			  String cmd = itemPath+"phantomjs.exe "+itemPath+"foo.js";
-			  System.out.println(cmd);
-			  String rs = JSUtil.execCommand(cmd);
-		      System.out.println(rs); 
-		      doc= Jsoup.parse(rs);
-		}else{
-			doc =Jsoup.parse(new File(path), "utf-8");
+	private static void initItemPath(){ 
+		 String path = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+		 path.indexOf("/crawl/");
+		 path =  path.substring(0,path.indexOf("/crawl/")+7); 
+		  if(path.indexOf(":") >0){
+			  path =path.substring(path.indexOf("/")+1); 
+		  }else{
+			  path =path.substring(path.indexOf("/")); 
+		  }
+		  itemPath = path;
+	}
+	private static String getCMD(String path,String isDynamic){
+//		 String scriptPath= 
+		JsoupTool tool =  ApplicationContextHelper.getBeanByType(JsoupTool.class); 
+		String scriptPath= tool.getScriptPath();
+		String exePath =tool.getExePath();
+		String cmd = "";
+		if(exePath.length()<3){
+			   if(itemPath == null ||itemPath.length()<3){initItemPath();}
+			   exePath = itemPath+"phantomjs.exe " ; 
 		}
-		String title = doc.title();
-		Elements es =doc.select(select);
-		List<String> rs = new ArrayList<>();
-		 
-		for(Element element :es ){ 
-			String rsStr = element.attr("src"); 
-			if(ishttp) {
-				rsStr=parseUrl(rsStr,path);
-			}
-			rs.add(rsStr);
-//		System.out.println(rsStr);
-		} 
-	
-		return rs; 	
+		if(scriptPath.length()<3){
+			 if(itemPath == null ||itemPath.length()<3){initItemPath();}
+			 scriptPath = itemPath+"script.js ";
+		}
+		 cmd = exePath + " " +scriptPath + " " +isDynamic + " " +path;   
+		 return cmd ;
 	}
 	
 	/**
@@ -84,19 +111,20 @@ public class JsoupTool {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Set<String> getUrlsSet(String path,String select,String attr) throws Exception{
+	public static Set<String> getUrlsSet(String path,String select,String attr,String isDynamic) throws Exception{
 		Document doc ;
 		boolean ishttp = false; 
 		if("http".equals(path.substring(0, 4))){ 
 			//doc = Jsoup.connect(path).get();
-			ishttp=true;
+			ishttp=true; 
 			 
-			  String itemPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-			  itemPath =itemPath.substring(1)+"static/";  
-			  String cmd = itemPath+"phantomjs.exe "+itemPath+"foo.js";
+			  String cmd = getCMD(path,isDynamic);	 
 			  System.out.println(cmd);
 			  String rs = JSUtil.execCommand(cmd);
-		      System.out.println(rs); 
+//		      System.out.println(rs); 
+		      if("error".equals(rs)){
+		    	  throw new Exception("打开url失败");
+		      }
 		      doc= Jsoup.parse(rs);
 		}else{
 			doc =Jsoup.parse(new File(path), "utf-8");
@@ -111,8 +139,7 @@ public class JsoupTool {
 			if(ishttp) {
 				rsStr=parseUrl(rsStr,path);
 			}
-			rs.add(rsStr);
-		
+			rs.add(rsStr); 
 		} 
 	
 		return rs; 	
@@ -126,8 +153,7 @@ public class JsoupTool {
 	 */
 	public static String parseUrl(String url,String host) {
 		if(null != url && url.length()>3) {
-			String prefix  = url.substring(0, 2); 
-			
+			String prefix  = url.substring(0, 2);  
 			if("..".equals(prefix)) {
 				//对../ 做处理
 				int lastIndex = host.lastIndexOf("/");
