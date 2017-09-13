@@ -29,11 +29,7 @@ public class MainController {
 	private OKHttpTool tool ;   
 	@Autowired
 	MainService service;
-//	@Autowired
-//	ControllerRecord record;
-//	@Value("${image.save.path}")
-//	private String fileSavePath;
-//	private String fileSavePath = System.getProperty("user.home");
+	
 	Logger logger = LoggerFactory.getLogger(MainController.class);  
 		/**
 		 * 首页的配置

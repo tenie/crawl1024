@@ -60,47 +60,6 @@ import java.util.zip.*;
 	        long endTime=System.currentTimeMillis();  
 	        System.out.println("耗费时间： "+(endTime-startTime)+" ms");  
 		}
-	    public static void main(String[] ss) {  
-	    	//xmlString20150701010101to20151015155211.zip
-	    	getFile("D:/zip文件目录1.zip","D:/小强代理");
-// 
-//
-//	        long startTime=System.currentTimeMillis();  
-//	        try {  
-//	            ZipInputStream Zin=new ZipInputStream(new FileInputStream(  
-//	                    "C:\\Users\\HAN\\Desktop\\stock\\SpectreCompressed.zip"));//输入源zip路径  
-//	            BufferedInputStream Bin=new BufferedInputStream(Zin);  
-//	            String Parent="C:\\Users\\HAN\\Desktop"; //输出路径（文件夹目录）  
-//	            File Fout=null;  
-//	            ZipEntry entry;  
-//	            try {  
-//	                while((entry = Zin.getNextEntry())!=null && !entry.isDirectory()){  
-//	                    Fout=new File(Parent,entry.getName());  
-//	                    if(!Fout.exists()){  
-//	                        (new File(Fout.getParent())).mkdirs();  
-//	                    }  
-//	                    FileOutputStream out=new FileOutputStream(Fout);  
-//	                    BufferedOutputStream Bout=new BufferedOutputStream(out);  
-//	                    int b;  
-//	                    while((b=Bin.read())!=-1){  
-//	                        Bout.write(b);  
-//	                    }  
-//	                    Bout.close();  
-//	                    out.close();  
-//	                    System.out.println(Fout+"解压成功");      
-//	                }  
-//	                Bin.close();  
-//	                Zin.close();  
-//	            } catch (IOException e) {  
-//	                 
-//	                e.printStackTrace();  
-//	            }  
-//	        } catch (FileNotFoundException e) {  
-//	            
-//	            e.printStackTrace();  
-//	        }  
-//	        long endTime=System.currentTimeMillis();  
-//	        System.out.println("耗费时间： "+(endTime-startTime)+" ms");  
-	    }  
+	    
 	  
 	}  

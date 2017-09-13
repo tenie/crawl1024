@@ -212,10 +212,6 @@ public class ZipFile {
 	            bi.close();  
 	            in.close(); // 输入流关闭  
 	        }  
-	    } 
-	     
-	
-	
-	
+	    }  
 
 }

@@ -210,40 +210,9 @@ public class OKHttpTool {
 	 	//http://cdn1.metarthunter.com/content/150701/fantastic-brunette-hottie-yarina-a-reveals-her-amazing-body-05.jpg
 //	 	String rs = ok.getBodyString("http://t66y.com/htm_mob/7/1709/2628582.html");
 	 	Set<Map<String,Object>> m = new HashSet<Map<String,Object>>();
-	 	ok.asyncGetBodyByte("https://www.tenie.net/lib/img/JGT_meitu_3.jpg",m);
-	 	
-	 	
-	 	//	 	String rs = ok.getBodyString("http://localhost:8080");
+	 	ok.asyncGetBodyByte("https://www.tenie.net/lib/img/JGT_meitu_3.jpg",m);  
 	 	System.out.println(m.size());
-		  //System.out.println(ok.run("http://tenie.net"));
-		// ok.run();
-//	 	Thread thread = new Thread(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				int i = 0;
-//				while(i < 21) {
-//					
-//					try {
-//						Thread.sleep(1000);
-//						System.out.println(i++);
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//				
-//			}
-//	 		 
-//	 	 });
-//	 	thread.start();
-//	 	System.out.println("begin..");
-//	 	byte[] b = ok.getBodyBytes("http://cdn1.metarthunter.com/content/140303/zlatka-a-bunnu-15.jpg");
-//	 	 
-//	 	//			
-//		 System.out.println(b.length);
-//		  Map<String, Object> rsMap =   new OKHttpTool().getBodyBytesAndType("https://www.tenie.net/lib/assets/img/codeMonkey.ico");
-//		 System.out.println(rsMap.get("type")); 
+		 
 		} 
 
 }
