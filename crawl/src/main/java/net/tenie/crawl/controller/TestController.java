@@ -1,5 +1,7 @@
 package net.tenie.crawl.controller;
  
+import javax.mail.MessagingException;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +16,17 @@ public class TestController {
 			return f;  //前端接受的是一个json
 		}
 		
+		@RequestMapping("/test/mail")
+		public  foo sendmail() throws MessagingException{
+			SendEMail.simpleSendMail("tenie@tenie.net","tutucn@sohu.com","57523364","smtp.sohu.com","test","tetst body...");
+ System.out.println("ok...");
+			
+			
+			foo f = new foo();
+			f.setName("foo");
+			f.setAge(100);
+			return f;  //前端接受的是一个json
+		}
 		
 }
 

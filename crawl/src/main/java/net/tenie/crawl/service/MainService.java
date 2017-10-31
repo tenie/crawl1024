@@ -14,7 +14,7 @@ public interface MainService {
 	Set<String>  multiAnalyzeUrl(ControllerRecord record,Map<String, String> queryParam) throws Exception;
 	String queryAnalyzeFinish(ControllerRecord record) ;
 	String cacheImgUrlsDownload(ControllerRecord record);
-	void downloadFinishZip(ControllerRecord record,HttpServletResponse response)throws IOException ;
+	void downloadFinishZip(ControllerRecord record,HttpServletResponse response,String persist)throws IOException ;
 	String useImgUrlsDownload(Map<String, String> queryParam,ControllerRecord record);
 	
 	String cacheDownload(ControllerRecord record);

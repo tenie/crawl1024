@@ -38,7 +38,9 @@ public class MainServiceImpl implements MainService{
 		private JsoupTool jsoupTool ;
 		 
 	 
-		
+		public static void main(String[] args) {
+System.out.println(new SimpleDateFormat("_HH_mm_ss").format(new Date()));
+		}
 	 
 		/**
 		 * 异步下载, 输出.zip文件到指定目录
@@ -59,8 +61,8 @@ public class MainServiceImpl implements MainService{
 //				Map<String, Object> rsMap; 
 			    tool.asyncGetBodyByte(url,queue);  
 		   } 
-		   //图片保存到硬盘 
-		   String finishZIPfile = fileName+"/image_"+new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date())+".zip";  
+		   //图片保存到硬盘  //TODO
+		   String finishZIPfile = fileName+new SimpleDateFormat("_HH_mm_ss").format(new Date())+".zip";  
 		   File zipFile = new File(finishZIPfile); 
 		   ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 
 		   int append = 0; //记录是否给zip包添加的元素个数
@@ -114,14 +116,17 @@ public class MainServiceImpl implements MainService{
 					isDynamic="false";
 				}
 		    	//解析html
-		        rs= jsoupTool.getUrlsSet(url1, select,attr,isDynamic);
+				Map<String,Object>  rsMap = jsoupTool.getUrlsSet(url1, select,attr,isDynamic);
+	    		Set<String>  rsSet = (Set<String>) rsMap.get("set");
+	    		String title =  (String) rsMap.get("title");
+		        rs= rsSet;
 		        Set<String>  cache=  record.getCache();
 		        if(cache !=null)cache.clear();
 	 	        cache=rs;
 		        record.setCache(rs);
 		        
 		        //下载图片
-		         String fileName=record.getFileSavePath();
+		         String fileName=record.getFileSavePath()+"/"+title;
 				 String[] urlArry ;
 				 if(cache!=null && !cache.isEmpty()){
 					 urlArry = new String[cache.size()];
@@ -164,6 +169,7 @@ public class MainServiceImpl implements MainService{
 		@Override
 		public Set<String> multiAnalyzeUrl(ControllerRecord record, Map<String, String> queryParam) throws Exception {
 			Set<String> rs = new HashSet<String>();
+			String title ="";
 			try {
 				
 				if(record.isCrawling()){
@@ -181,14 +187,17 @@ public class MainServiceImpl implements MainService{
 		         
 		    	String[] strArr = url1.split("\n");
 		    	for(String str : strArr){
-		    		rs.addAll(jsoupTool.getUrlsSet(str, select,attr,isDynamic));
+		    		Map<String,Object>  rsMap = jsoupTool.getUrlsSet(str, select,attr,isDynamic);
+		    		Set<String>  rsSet = (Set<String>) rsMap.get("set");
+		    	    title =  (String) rsMap.get("title");
+		    		rs.addAll(rsSet);
 		    	} 
 		    	Set<String> cache =record.getCache();
 		    	if(cache !=null)cache.clear();
 		        cache=rs;
 		        record.setCache(rs);
 		        //下载图片
-		         String fileName=record.getFileSavePath();
+		         String fileName=record.getFileSavePath()+"/"+title;
 				 String[] urlArry ;
 				 if(cache!=null && !cache.isEmpty()){
 					 urlArry = new String[cache.size()];
@@ -264,7 +273,7 @@ public class MainServiceImpl implements MainService{
 		 * 把下载的  图片.zip包   传递给客户端
 		 */
 		@Override
-		public void downloadFinishZip(ControllerRecord record,HttpServletResponse response) throws IOException {
+		public void downloadFinishZip(ControllerRecord record,HttpServletResponse response,String persist) throws IOException {
 		    String finishzipFile = record.getFinishzipFile();
 			
 			if(finishzipFile == null || "".equals(finishzipFile)){ 
@@ -279,7 +288,9 @@ public class MainServiceImpl implements MainService{
 		        int length = inputStream.read(data);  
 		        inputStream.close();  
 		        //编码否则中文浏览器不显示
-		        String downloadFilename = "image"+new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date())+".zip";
+		        String[] fileNameArray = finishzipFile.split("/");
+		        String fileName = fileNameArray[fileNameArray.length-1];
+		        String downloadFilename = fileName  ;//+new SimpleDateFormat("_HH_mm_ss").format(new Date())+".zip";
 		        downloadFilename = URLEncoder.encode(downloadFilename, "UTF-8");  
 //			        response.setContentType("image/png");   //这个浏览器会直接现实图片,所以改为下面的配置,可以实现下载 
 		        // 写明要下载的文件的大小 
@@ -290,8 +301,15 @@ public class MainServiceImpl implements MainService{
 		        stream.write(data);  
 		        stream.flush();  
 		        stream.close(); 
-		        record.setFinishzipFile(""); 
-		        DeleteFile.deleteAllFilesOfDir(file);
+		        record.setFinishzipFile("");
+		        //删除缓存文件
+		        if("no".equals(persist)) {
+		        	 DeleteFile.deleteAllFilesOfDir(file);
+		        }else {
+		        	ControllerRecord.getHistoryZip().add(finishzipFile);
+		        	System.out.println(ControllerRecord.getHistoryZip());
+		        }
+ 	       
 		        logger.info("finishzipFile=="+finishzipFile);
 		    } 
 			

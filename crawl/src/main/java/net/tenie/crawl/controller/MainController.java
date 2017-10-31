@@ -1,8 +1,11 @@
 package net.tenie.crawl.controller;
    
  
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import net.tenie.crawl.entity.ControllerRecord;
 import net.tenie.crawl.service.MainService;
 import net.tenie.crawl.tools.ApplicationContextHelper;
+import net.tenie.crawl.tools.DeleteFile;
 import net.tenie.crawl.tools.OKHttpTool;
  
  
@@ -144,13 +149,13 @@ public class MainController {
 		 * @throws Exception
 		 */
 		//TODO
-		@RequestMapping(value="/downloadZip",method=RequestMethod.GET) 
-		public void downloadFinishZip(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		@RequestMapping(value="/downloadZip/{persist}",method=RequestMethod.GET) 
+		public void downloadFinishZip(HttpServletRequest request, HttpServletResponse response ,@PathVariable(value="persist") String persist ) throws Exception{
 			try {
 				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 				if(record.getAppendItem() == 0 ){ 
 				}else{
-					service.downloadFinishZip(record,response);  
+					service.downloadFinishZip(record,response,persist);  
 				} 
 				
 			} catch (Exception e) {
@@ -218,8 +223,34 @@ public class MainController {
 			} 
 			 
 		}
- 
 		
+		/**
+		 * 清空服务器端保留的zip缓存
+		 * @param request
+		 * @param response
+		 * @return
+		 */
+		@RequestMapping(value="/cleanPersist",method=RequestMethod.GET) 
+		@ResponseBody
+		public String  cleanPersist(HttpServletRequest request, HttpServletResponse response) {
+			try {
+				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
+				List<String> ls = record.getHistoryZip();
+				System.out.println(record.getHistoryZip());
+				for(String str:ls) {
+					File file = new File(str);  
+					DeleteFile.deleteAllFilesOfDir(file);
+					
+					record.setHistoryZip(new ArrayList<String>());
+					System.out.println(record.getHistoryZip());
+				}
+				return "yes"  ;
+			} catch (Exception e) {
+				e.printStackTrace(); 
+				return "出错了..";
+			} 
+			 
+		}
 		 
 }
 

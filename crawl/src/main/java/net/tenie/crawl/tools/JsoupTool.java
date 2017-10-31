@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jsoup.Jsoup;
@@ -111,7 +113,7 @@ public class JsoupTool {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Set<String> getUrlsSet(String path,String select,String attr,String isDynamic) throws Exception{
+	public static Map<String,Object>  getUrlsSet(String path,String select,String attr,String isDynamic) throws Exception{
 		Document doc ;
 		boolean ishttp = false; 
 		if("http".equals(path.substring(0, 4))){ 
@@ -129,7 +131,8 @@ public class JsoupTool {
 		}else{
 			doc =Jsoup.parse(new File(path), "utf-8");
 		}
-		String title = doc.title();
+		String title = doc.title().replace(" ", "_");
+		System.out.println("title===="+title);
 		Elements es =doc.select(select);
 		Set<String> rs = new HashSet<>();
 		 
@@ -141,8 +144,10 @@ public class JsoupTool {
 			}
 			rs.add(rsStr); 
 		} 
-	
-		return rs; 	
+		Map<String,Object> reMap = new HashMap<String,Object>();
+		reMap.put("set", rs);
+		reMap.put("title", title);
+		return reMap; 	
 	}
 	
 	/**

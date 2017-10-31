@@ -1,6 +1,8 @@
 package net.tenie.crawl.entity;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -12,6 +14,7 @@ import net.tenie.crawl.tools.DeleteFile;
 @Component
 @Scope("session")
 public class ControllerRecord {
+	volatile private String title="";
 	volatile private boolean  isCrawling = false;  
 	volatile private boolean isDownloading = false; 
 	volatile private Set<String> cache ;
@@ -20,7 +23,10 @@ public class ControllerRecord {
 	volatile private String finishzipFile = "";
 	private static ArrayBlockingQueue queue;
 	
+	private static ArrayList<String> historyZip = new ArrayList<String>();
+	
 	private Thread thread;
+	
 	
 	public void clear() {
 		if(thread !=null ) {
@@ -97,7 +103,28 @@ public class ControllerRecord {
 	}
 	public void setFinishzipFile(String finishzipFile) {
 		this.finishzipFile = finishzipFile;
+	} 
+	
+	public String getTitle() {
+		return title;
+	} 
+	public void setTitle(String title) {
+		this.title = title;
+	} 
+
+
+	public static ArrayList<String> getHistoryZip() {
+		return historyZip;
 	}
+
+
+
+	public static void setHistoryZip(ArrayList<String> historyZip) {
+		ControllerRecord.historyZip = historyZip;
+	}
+
+
+
 	@Override
 	public String toString() {
 		return "ControllerRecord [isCrawling=" + isCrawling + ", isdownloading=" + isDownloading + ", cache=" + cache

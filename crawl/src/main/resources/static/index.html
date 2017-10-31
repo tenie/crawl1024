@@ -67,6 +67,20 @@
 								动态页面:<input type="checkbox" id="isDynamic">
 								<!-- <button onclick="test()">test</button> -->
 							</p>
+							<span>
+								<button onclick="cleanTextarea()" >清空url</button> 				
+							</span>
+							<p>
+								保留缓存:<input type="checkbox" id="persist" checked> 
+							</p>
+							<span>
+								<button onclick="cleanPersist()" >清空缓存</button> 				
+							</span>
+							
+							<p>
+								先缓存在服务器:<input type="checkbox" id="donotDownloadZip" > 
+							</p>
+							
 						</div>
 						
 						<p></p>
@@ -150,7 +164,7 @@
 						  <div class="row">
 						   		<div class="col-xs-6">
 							  		<textarea name="imgUrls" id="imgUrls" rows="12" cols="80" ></textarea><br>
-							  		<button  id="imgDownloadBtn" style="margin-top: 10px;">爬取</button>
+							  		<button  id="" style="margin-top: 10px;">爬取</button>
 							   </div><!-- col-xs-6 -->
 							  
 						  </div><!-- row -->
@@ -223,8 +237,24 @@ window.onbeforeunload= function(){
 							//alert("done"+index++);
 							if(rs == "done"){
 								clearInterval(done); 
-							//	$("#downloadZIPbtn").click(); //jQuery居然不能触发a 的click事件,用下面的原生写法
-								document.getElementById("downloadZIPbtn").click();  
+							//	$("#downloadZIPbtn").click();
+							
+								//如果不下载, 只缓存在服务器	
+								
+								if($("#donotDownloadZip[type=checkbox]:checked").length==0){
+									//给下载地址赋值
+									 console.log($("#persist[type=checkbox]:checked").length)
+							    	 var persist = "no"
+							    	 if($("#persist[type=checkbox]:checked").length >0){
+							    		 persist = "yes"
+							    	 }
+									 $("#downloadZIPbtn").attr("href","/downloadZip/"+persist)
+									document.getElementById("downloadZIPbtn").click();//jQuery居然不能触发a 的click事件,用下面的原生写法  
+									 		
+								}else{
+									alert("服务器已完成当前任务...")
+								}
+								
 								//alert("ok");
 								btn.removeAttr("disabled");
 								btn.text("提交");
@@ -305,8 +335,9 @@ window.onbeforeunload= function(){
 	
 	
 	$("#btn2").click(function(){
-		var btn =$(this)
-		var btntext = btn.text();
+		v.run=true;
+	    btn =$(this)
+	    btntext = btn.text();
 		btn.attr("disabled",true);
 		btn.text("下载中...")
 		$.post("/urls",$("#form2").serialize() +"&isDynamic="+(($("#isDynamic[type=checkbox]:checked").length==1)?"true":"false"),function(data){
@@ -338,7 +369,7 @@ window.onbeforeunload= function(){
 	})
 	//后台下载图片
 	$("#imgDownloadBtn").click(function(){ 
-		var btn =$(this)
+		btn =$(this)
 		btn.attr("disabled",true);
 		btn.text("爬取ing")
 		var index = 0;
@@ -415,6 +446,24 @@ window.onbeforeunload= function(){
     		
     	})
     })
+    
+    //清空前台url按钮
+   	function cleanTextarea(){
+    	
+    	 var pageName = $("#myTab li[class='active'] a").text()
+    	 if("单页面" == pageName){
+    		 $("#viewURL").val("")
+    	 }else{
+    		 $("#viewURL2").val("")
+    	 }
+    	
+    }
+    //清空后台缓存
+    function cleanPersist(){
+    	$.get("/cleanPersist",function(data){
+    		
+    	})
+    }
 </script>    
     
   </body>
