@@ -273,8 +273,13 @@ public class MainController {
 					 Thread thread = new Thread(new Runnable() {
 							public void run() {
 								try { 
-									JSUtil.execCommand(
-									"sshpass -f "+pwd+" scp "+ls+" " +destFile);
+//									 String s = JSUtil.execCommand( "sshpass ");
+//									 System.out.println(s);
+									 Runtime rt = Runtime.getRuntime();  
+									 System.out.println("/usr/local/bin/sshpass -f "+pwd+" scp "+str+" " +destFile);
+									 Process p = rt.exec("/usr/local/bin/sshpass -f "+pwd+" scp "+str+" " +destFile);
+//									JSUtil.execCommand(
+//									"sshpass -f "+pwd+" scp "+ls+" " +destFile);
 								} catch (Exception e) { 
 									e.printStackTrace();	
 								}finally { 

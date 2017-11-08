@@ -73,9 +73,10 @@ System.out.println(new SimpleDateFormat("_HH_mm_ss").format(new Date()));
 				    Map<String, Object> rsMap =  queue.take();
 				    byte[]	 imgB = (byte[]) rsMap.get("val");
 				    String type = (String) rsMap.get("type");
+				    String imageName =  (String) rsMap.get("name");
 				    if(imgB.length> 10){
 				    	System.out.println("append:"+append+":"+"image"+timeStr+append+"."+tool.typeChange(type));
-					    zip(zipOut, "image"+timeStr+append+"."+tool.typeChange(type),imgB); 
+					    zip(zipOut,append+imageName,imgB); 
 					    append++;
 				    } 
 				    logger.info("结束:队列中获取"+i);

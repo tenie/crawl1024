@@ -152,7 +152,9 @@ public class OKHttpTool {
 	           	    byte[] by =response.body().bytes();
 	           	    Map<String,Object> rs = new HashMap<String,Object>();
 	           	    rs.put("val", by);
-	           	    rs.put("type", type); 
+	           	    rs.put("type", type);
+	           	    String name = IMAGE_URL.substring(IMAGE_URL.lastIndexOf("/")+1);
+	           	    rs.put("name", name);
 	           	    collection.add(rs);
 	           	    // byte2image(by, "/Users/tenie/Desktop/foo."+type);
 	           	    response.close();
