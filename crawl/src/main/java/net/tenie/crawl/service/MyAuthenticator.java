@@ -1,4 +1,4 @@
-package net.tenie.crawl.controller;
+package net.tenie.crawl.service;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;

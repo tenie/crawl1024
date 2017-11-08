@@ -5,6 +5,8 @@ import javax.mail.MessagingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.tenie.crawl.service.SendEMail;
+
 @RestController //等价@Controller + @ResponseBody
 public class TestController {
 		
