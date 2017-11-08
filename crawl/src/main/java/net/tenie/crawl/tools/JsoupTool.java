@@ -107,6 +107,7 @@ public class JsoupTool {
 	}
 	
 	/**
+	 * 使用shell 命令调用phantomjs命令,获取命令返回的网页信息后, 在处理成url字符串,返回给调用者
 	 * 提供url或文件路径, 和要获取最终url的选择器表达式(和jquery语法类似)  获取最终的url字符串列表, 
 	 * @param path
 	 * @param select
@@ -145,8 +146,8 @@ public class JsoupTool {
 			rs.add(rsStr); 
 		} 
 		Map<String,Object> reMap = new HashMap<String,Object>();
-		reMap.put("set", rs);
-		reMap.put("title", title);
+		reMap.put("set", rs); 
+		reMap.put("title",title.length()>30? title.substring(0, 30):title); //截取title过程的字符串
 		return reMap; 	
 	}
 	
