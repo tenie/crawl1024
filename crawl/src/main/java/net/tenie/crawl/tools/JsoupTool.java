@@ -23,10 +23,10 @@ import org.springframework.util.ClassUtils;
 @Component
 public class JsoupTool {
 	
-	@Value("${phantomjs.path}") 
+	@Value("${phantomjs.path1}") 
 	private   String exePath;
 	
-	@Value("${script.path}")
+	@Value("${script.path1}")
 	private   String scriptPath;
 	
 	private static  String itemPath;

@@ -87,7 +87,7 @@ System.out.println(new SimpleDateFormat("_HH_mm_ss").format(new Date()));
 		   } 
 		    
 		   record.setAppendItem(append);
-		  
+		   record.getHistoryZip().add(finishZIPfile);
 		   return finishZIPfile; 
 		}
 		

@@ -55,7 +55,7 @@
 							  <a  href="/downloadZip"  v-bind:class="{'hidden': downloadbtn}" id="downloadZIPbtn">下载</a> <!--   v-bind:class="{'hidden': downloadbtn}"-->
 							</span>
 						 	<span>
-						 		状态: 
+						 		状态(点击红色方块可中断任务): 
 						 	</span> 
 							<span v-bind:class="{'hidden': ! run }"  style="  height: 15px;">
 								<button onclick="stop()" style="background-color: red;border: 0px;height: 15px;width: 15px;" ></button> 		
@@ -66,19 +66,23 @@
 							<p>
 								动态页面:<input type="checkbox" id="isDynamic">
 								<!-- <button onclick="test()">test</button> -->
-							</p>
-							<span>
-								<button onclick="cleanTextarea()" >清空url</button> 				
-							</span>
+							</p> 
 							<p>
 								保留缓存:<input type="checkbox" id="persist" checked> 
 							</p>
-							<span>
-								<button onclick="cleanPersist()" >清空缓存</button> 				
-							</span>
+							
 							
 							<p>
-								先缓存在服务器:<input type="checkbox" id="donotDownloadZip" > 
+								先缓存在服务器:<input type="checkbox" id="donotDownloadZip" checked> 
+							</p>
+							<span>
+								<button onclick="cleanPersist()" >清空缓存(后端)</button> 				
+							</span>
+							<p>
+								<button onclick="cleanTextarea()" >清空url(前端)</button> 				
+							</p>
+							<p>
+								<button onclick="copyZipFile()" >scp</button> 				
 							</p>
 							
 						</div>
@@ -97,21 +101,28 @@
 					  	<h3>获取单个页面中的图片</h3> 
 					  	<hr>
 					  	  <div style="margin-bottom: 10px;"> 
-					  	   <form id="form1">
-					  		<p style="margin-bottom: 5px;">
-					  			单个页面url:<input name="url1" style="width: 506px;" >
-					  		</p>  
-					  		<span> 
-					  			元素选择器表达式:<input name="select" value="img"  >
-					  	    </span>  
-					  		<span>
-					  			元素属性:<input name="attr" value="src">
-					  		</span> 
+					  	   <form id="form1" class="form-inline"> 
+					  		 
+					  		  <div class="form-group">
+					  		    <div class="input-group">
+						  		    <div class="input-group-addon">单个页面url:</div> 
+								    <input name="url1" style="width: 100%;"  class="form-control">
+					  		  	</div>
+					  		  	<div class="input-group">
+						  		    <div class="input-group-addon">元素选择器表达式:</div> 
+								    <input name="select" value="img"   class="form-control">
+					  		  	</div>
+					  		  	<div class="input-group">
+						  		    <div class="input-group-addon">元素属性:</div> 
+								   <input name="attr" value="src"  class="form-control">
+					  		  	</div>
+							  </div> 
+					  		 
 					  		</form> 
 					  		<br>
 					  		<button id="btn1">提交</button> 
 					     </div>
-					  	<textarea id="viewURL" rows="12" cols="80" readonly > </textarea>
+					  	<textarea id="viewURL" rows="10"  readonly  class="form-control" > </textarea>
 			
 					 
 					  </div><!-- tab about -->
@@ -120,9 +131,20 @@
 					  <div class="tab-pane" id="profile">
 					  	<h4><i class="icon-briefcase"></i> 代理设置,翻墙用的代理服务器</h4>
 					  	<p class="sm">
-					  		<grey>代理服务器地址:<input name="host" id="host"></grey>
+					  		<!-- <grey>代理服务器地址:<input name="host" id="host"></grey>
 					  		<grey>端口:<input name="port" id="port"></grey> 
-					  		<button id="setProxybtn">提交</button><br/>
+					  		 -->
+					  		<div class="form-group">
+					  		    <div class="input-group">
+						  		    <div class="input-group-addon">代理服务器地址:</div> 
+								    <input name="host" id="host" class="form-control">
+					  		  	</div>
+					  		  	<div class="input-group">
+						  		    <div class="input-group-addon">端口:</div> 
+								   <input name="port" id="port" class="form-control">
+					  		  	</div> 
+							</div> 
+							<button id="setProxybtn">提交</button><br/> 
 					  	</p>
 					  
 						   
@@ -130,29 +152,34 @@
 					  
 	    			  <!-- ===== Third Tab ===== -->
 					  <div class="tab-pane" id="portfolio">
-						   <form id="form2">
+						   
 					 
 					  	<h3>获取多个页面中的图片,每个页面url用换行符分割</h3>
 					  	<!-- <h5>Web Designer</h5> -->
-					  	<hr>
+					  	<hr style="margin-top: 0px;    margin-bottom: 8px;">
 					 
-					  	<p>   
-					  		<form id="form2">
-						  		多页面url:<textarea name="url1"  rows="3" cols="80" ></textarea><br>
-						  		<div>
-						  			<span>
-						  			元素选择器:<input name="select"  value="img">
-							  		</span> 
-							  		<span>
-							  			元素属性:<input name="attr" value="src">
-							  		</span>   
-						  		</div>  
+					   
+					  		<form id="form2"  class="form-inline">
+					  			 <div class="form-group">
+						  		    <div class="input-group">
+							  		    <div class="input-group-addon">多页面url:</div> 
+									   <textarea name="url1"  rows="6"  class="form-control"></textarea>
+						  		  	</div>
+						  		  	<div class="input-group">
+							  		    <div class="input-group-addon">元素选择器:</div> 
+									    <input name="select"  value="img"  class="form-control">
+						  		  	</div>
+						  		  	<div class="input-group">
+							  		    <div class="input-group-addon">元素属性:</div> 
+									    <input name="attr" value="src" class="form-control">
+						  		  	</div>
+								  </div>  
+						  		 
 					  		</form>
-					  		 <button id="btn2">提交</button>
-					    </p> 
+					  		 <button id="btn2">提交</button> 
 					    
 					    
-					  	<textarea id="viewURL2" rows="7" cols="80" readonly > </textarea>
+					  	<textarea id="viewURL2" rows="7"class="form-control" readonly > </textarea>
 					  <!-- 	<p class="pull-right red"><i class="icon-heart"></i></p> -->
 					 
 					  </div><!-- /Tab Portfolio -->
@@ -162,8 +189,8 @@
 						  <h4>根据具体图片url下载</h4>
 						  <hr>
 						  <div class="row">
-						   		<div class="col-xs-6">
-							  		<textarea name="imgUrls" id="imgUrls" rows="12" cols="80" ></textarea><br>
+						   		<div class="col-xs-12">
+							  		<textarea name="imgUrls" id="imgUrls" rows="12"  class="form-control"></textarea><br>
 							  		<button  id="" style="margin-top: 10px;">爬取</button>
 							   </div><!-- col-xs-6 -->
 							  
@@ -458,9 +485,16 @@ window.onbeforeunload= function(){
     	 }
     	
     }
-    //清空后台缓存
+    //清空后台缓存   
     function cleanPersist(){
     	$.get("/cleanPersist",function(data){
+    		
+    	})
+    }
+    
+  // copyZipFile
+    function copyZipFile(){
+    	$.get("/copyZipFile",function(data){
     		
     	})
     }

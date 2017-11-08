@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,17 +24,22 @@ import net.tenie.crawl.entity.ControllerRecord;
 import net.tenie.crawl.service.MainService;
 import net.tenie.crawl.tools.ApplicationContextHelper;
 import net.tenie.crawl.tools.DeleteFile;
+import net.tenie.crawl.tools.JSUtil;
 import net.tenie.crawl.tools.OKHttpTool;
  
  
 
-@Controller //@RestController 等价@Controller + @ResponseBody
+@Controller //@RestController 等价@Controller + @ResponseBody 
 public class MainController { 
 
 	@Autowired
 	private OKHttpTool tool ;   
 	@Autowired
 	MainService service;
+	@Value("${password.file}")
+	private String pwd;
+	@Value("${dest.file}")
+	private String destFile;
 	
 	Logger logger = LoggerFactory.getLogger(MainController.class);  
 		/**
@@ -251,7 +257,40 @@ public class MainController {
 			} 
 			 
 		}
-		 
+		
+		/**
+		 * 拷贝文件到其他服务器
+		 */
+		@RequestMapping(value="/copyZipFile",method=RequestMethod.GET) 
+		@ResponseBody
+		public String  copyZipFileToOtherServer(HttpServletRequest request, HttpServletResponse response) {
+			try {
+				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
+				List<String> ls = record.getHistoryZip();
+				System.out.println(record.getHistoryZip());
+				for(String str:ls) {
+//					JSUtil.execCommand("")
+					 Thread thread = new Thread(new Runnable() {
+							public void run() {
+								try { 
+									JSUtil.execCommand(
+									"sshpass -f "+pwd+" scp "+ls+" " +destFile);
+								} catch (Exception e) { 
+									e.printStackTrace();	
+								}finally { 
+									 
+								} 
+						    }
+						});
+					 thread.start();
+				}
+				return "yes"  ;
+			} catch (Exception e) {
+				e.printStackTrace(); 
+				return "出错了..";
+			} 
+			 
+		} 
 }
 
  

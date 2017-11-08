@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import net.tenie.crawl.controller.SendEMail;
+import net.tenie.crawl.service.SendEMail;
  
 @Component  
 //@EnableScheduling	//启用定时任务
