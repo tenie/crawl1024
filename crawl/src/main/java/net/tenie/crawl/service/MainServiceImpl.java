@@ -62,6 +62,11 @@ System.out.println(new SimpleDateFormat("_HH_mm_ss").format(new Date()));
 			    tool.asyncGetBodyByte(url,queue);  
 		   } 
 		   //图片保存到硬盘  //TODO
+		  
+		   File saveDir = new File( record.getFileSavePath()); 
+		   if( !saveDir.exists()) {
+			   saveDir.mkdirs();
+		   }
 		   String finishZIPfile = fileName+new SimpleDateFormat("_HH_mm_ss").format(new Date())+".zip";  
 		   File zipFile = new File(finishZIPfile); 
 		   ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile)); 

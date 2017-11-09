@@ -24,3 +24,5 @@ hs_err_pid*
 .metadata/
 .recommenders/
 RemoteSystemsTempFiles/
+/crawl/application.properties
+/crawl/pwd.txt

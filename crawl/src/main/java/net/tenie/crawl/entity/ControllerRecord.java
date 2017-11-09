@@ -19,7 +19,7 @@ public class ControllerRecord {
 	volatile private boolean isDownloading = false; 
 	volatile private Set<String> cache ;
 	volatile private int appendItem = 0;
-	private String fileSavePath = System.getProperty("user.home").replace("\\", "/");  
+	private String fileSavePath = System.getProperty("user.home").replace("\\", "/")+"/crawlRs";  
 	volatile private String finishzipFile = "";
 	private static ArrayBlockingQueue queue;
 	

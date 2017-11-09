@@ -36,10 +36,11 @@ public class MainController {
 	private OKHttpTool tool ;   
 	@Autowired
 	MainService service;
-	@Value("${password.file}")
-	private String pwd;
+ 
 	@Value("${dest.file}")
 	private String destFile;
+	@Value("${scpCMD}")
+	private String scpCMD;
 	
 	Logger logger = LoggerFactory.getLogger(MainController.class);  
 		/**
@@ -265,21 +266,32 @@ public class MainController {
 		@ResponseBody
 		public String  copyZipFileToOtherServer(HttpServletRequest request, HttpServletResponse response) {
 			try {
+				
+				
+				
 				ControllerRecord record = ApplicationContextHelper.getBeanByType(ControllerRecord.class);
 				List<String> ls = record.getHistoryZip();
 				System.out.println(record.getHistoryZip());
-				for(String str:ls) {
+//				for(String str:ls) {
 //					JSUtil.execCommand("")
 					 Thread thread = new Thread(new Runnable() {
 							public void run() {
 								try { 
+									
+									Runtime rt = Runtime.getRuntime();  
+									rt.exec(scpCMD);
+									/*
 //									 String s = JSUtil.execCommand( "sshpass ");
 //									 System.out.println(s);
 									 Runtime rt = Runtime.getRuntime();  
-									 System.out.println("/usr/local/bin/sshpass -f "+pwd+" scp "+str+" " +destFile);
-									 Process p = rt.exec("/usr/local/bin/sshpass -f "+pwd+" scp "+str+" " +destFile);
+									 String cmdStr =  scpCMD+" "+str+" " +destFile;
+									 System.out.println("执行的scp命令==="+cmdStr);
+									 Process p = rt.exec(cmdStr);
+									 System.out.println("test scp ");
+//									 Process p = rt.exec("/usr/local/bin/sshpass -f "+pwd+" scp "+str+" " +destFile);
 //									JSUtil.execCommand(
 //									"sshpass -f "+pwd+" scp "+ls+" " +destFile);
+									 */
 								} catch (Exception e) { 
 									e.printStackTrace();	
 								}finally { 
@@ -288,7 +300,7 @@ public class MainController {
 						    }
 						});
 					 thread.start();
-				}
+//				}
 				return "yes"  ;
 			} catch (Exception e) {
 				e.printStackTrace(); 
